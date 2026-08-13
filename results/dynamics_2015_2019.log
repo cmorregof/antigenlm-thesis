@@ -1,0 +1,21 @@
+Cache cargado: embeddings=(111756, 384) records=111756
+Metadata: sampling=all seed=42 max_per_subtype=-1
+
+Resultados rolling-origin:
+  d=10 H1N1 persistence: n=12 RMSE=0.4760 MAE=0.2053 dist=1.3071 ratio=1.0000 impr=0.0000 NLL=NA
+  d=10 H1N1 constant_velocity: n=12 RMSE=0.7975 MAE=0.3101 dist=1.9805 ratio=1.6753 impr=-0.6753 NLL=NA
+  d=10 H1N1 ridge_var1: n=12 RMSE=0.4744 MAE=0.2091 dist=1.2850 ratio=0.9965 impr=0.0035 NLL=NA
+  d=10 H1N1 ridge_var2: n=12 RMSE=0.4375 MAE=0.2141 dist=1.2457 ratio=0.9190 impr=0.0810 NLL=NA
+  d=10 H1N1 gaussian_rw_mean: n=12 RMSE=0.4768 MAE=0.2049 dist=1.3048 ratio=1.0017 impr=-0.0017 NLL=0.9175
+  d=10 H3N2 persistence: n=12 RMSE=0.5242 MAE=0.2479 dist=1.4252 ratio=1.0000 impr=0.0000 NLL=NA
+  d=10 H3N2 constant_velocity: n=12 RMSE=0.7374 MAE=0.3286 dist=1.9101 ratio=1.4067 impr=-0.4067 NLL=NA
+  d=10 H3N2 ridge_var1: n=12 RMSE=0.5221 MAE=0.2744 dist=1.4761 ratio=0.9961 impr=0.0039 NLL=NA
+  d=10 H3N2 ridge_var2: n=12 RMSE=0.5512 MAE=0.2771 dist=1.5174 ratio=1.0516 impr=-0.0516 NLL=NA
+  d=10 H3N2 gaussian_rw_mean: n=12 RMSE=0.5245 MAE=0.2485 dist=1.4261 ratio=1.0007 impr=-0.0007 NLL=3.9386
+Traceback (most recent call last):
+  File "/Users/cmorregof/Tesis/antigenlm-thesis/latent_dynamics_pca.py", line 1052, in <module>
+    main()
+  File "/Users/cmorregof/Tesis/antigenlm-thesis/latent_dynamics_pca.py", line 975, in main
+    figures.extend(plot_rolling_predictions(rolling_payload[("H1N1", 3)], "H1N1", 3))
+                                            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: ('H1N1', 3)

@@ -1,0 +1,125 @@
+{
+  "created_at": "2026-05-14 06:00:36 -05",
+  "notes": [
+    "Counts start from the local processed paired-strain JSON files, not from raw GISAID XLS/FASTA exports.",
+    "Earlier raw-export filters were not fully retained in the current logs and are reported as unavailable rather than reconstructed.",
+    "No sequences, isolate identifiers, accessions, locations, hosts, or submitter metadata are written by this output."
+  ],
+  "unavailable_raw_filter_counts": [
+    "raw local GISAID/EpiFlu records loaded",
+    "records removed during original FASTA/XLS parsing",
+    "records removed before paired_strains construction",
+    "host/geography/laboratory exclusions before local JSON creation, if any"
+  ],
+  "cache_path": "results/embeddings_cache_full_all_available.pkl",
+  "cache_metadata": {
+    "sampling_strategy": "all",
+    "seed": 42,
+    "max_per_subtype": -1,
+    "max_seq_length": 4000,
+    "embedding_batch_size": 4,
+    "created_at_utc": "2026-05-05T09:40:15Z",
+    "checkpoint": {
+      "path": "prediction_sequence/pytorch_model.bin",
+      "exists": true,
+      "size_bytes": 1076663612,
+      "mtime": 1776879300.0,
+      "sha256": "6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff"
+    }
+  },
+  "total": {
+    "processed_paired_records": 111756,
+    "paired_records_with_ha_na_subtype_date": 111756,
+    "successfully_embedded_records": 111756,
+    "exact_ha_na_deduplicated_records": 82306,
+    "deduplicated_fraction": 0.7364794731379076,
+    "cache_shape": [
+      111756,
+      384
+    ]
+  },
+  "by_subtype": {
+    "H1N1": {
+      "processed_paired_records": 46125,
+      "records_with_ha_sequence": 46125,
+      "records_with_na_sequence": 46125,
+      "records_with_subtype": 46125,
+      "records_with_year_and_month": 46125,
+      "paired_records_with_ha_na_subtype_date": 46125,
+      "exact_ha_na_deduplicated_records": 36753,
+      "ha_length": {
+        "n": 46125,
+        "min": 1695,
+        "p05": 1701.0,
+        "median": 1734.0,
+        "mean": 1729.0096910569105,
+        "p95": 1777.0,
+        "max": 1799
+      },
+      "na_length": {
+        "n": 46125,
+        "min": 1350,
+        "p05": 1410.0,
+        "median": 1420.0,
+        "mean": 1423.944888888889,
+        "p95": 1458.0,
+        "max": 1493
+      },
+      "character_summary": {
+        "records_with_non_iupac_or_unexpected_chars": 0,
+        "records_with_gap_character": 0,
+        "records_with_ambiguous_or_non_acgt_character": 528,
+        "observed_characters": {
+          "A": 49471879,
+          "C": 26981874,
+          "G": 32950317,
+          "N": 1969,
+          "T": 36023991
+        }
+      }
+    },
+    "H3N2": {
+      "processed_paired_records": 65631,
+      "records_with_ha_sequence": 65631,
+      "records_with_na_sequence": 65631,
+      "records_with_subtype": 65631,
+      "records_with_year_and_month": 65631,
+      "paired_records_with_ha_na_subtype_date": 65631,
+      "exact_ha_na_deduplicated_records": 45553,
+      "ha_length": {
+        "n": 65631,
+        "min": 1672,
+        "p05": 1701.0,
+        "median": 1735.0,
+        "mean": 1723.9359296673829,
+        "p95": 1762.0,
+        "max": 1800
+      },
+      "na_length": {
+        "n": 65631,
+        "min": 1251,
+        "p05": 1410.0,
+        "median": 1436.0,
+        "mean": 1429.41510871387,
+        "p95": 1466.0,
+        "max": 1590
+      },
+      "character_summary": {
+        "records_with_non_iupac_or_unexpected_chars": 0,
+        "records_with_gap_character": 0,
+        "records_with_ambiguous_or_non_acgt_character": 1869,
+        "observed_characters": {
+          "A": 67988092,
+          "C": 39903199,
+          "G": 47168011,
+          "N": 6689,
+          "T": 51891591
+        }
+      }
+    }
+  },
+  "cache_counts_by_subtype": {
+    "H1N1": 46125,
+    "H3N2": 65631
+  }
+}

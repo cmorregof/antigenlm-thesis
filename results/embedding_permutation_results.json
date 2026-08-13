@@ -1,0 +1,125 @@
+{
+  "created_at": "2026-05-14 06:02:12 -05",
+  "runtime_seconds": 10.430581092834473,
+  "inputs": {
+    "cache_path": "results/embeddings_cache_full_all_available.pkl"
+  },
+  "cache_metadata": {
+    "sampling_strategy": "all",
+    "seed": 42,
+    "max_per_subtype": -1,
+    "max_seq_length": 4000,
+    "embedding_batch_size": 4,
+    "created_at_utc": "2026-05-05T09:40:15Z",
+    "checkpoint": {
+      "path": "prediction_sequence/pytorch_model.bin",
+      "exists": true,
+      "size_bytes": 1076663612,
+      "mtime": 1776879300.0,
+      "sha256": "6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff"
+    }
+  },
+  "parameters": {
+    "pair_samples_per_subtype": 100000,
+    "pair_seeds": [
+      42,
+      7,
+      123
+    ],
+    "permutation_replicates": 20,
+    "permutation_seed": 42
+  },
+  "rows": [
+    {
+      "subtype": "H1N1",
+      "pair_seed": 42,
+      "requested_pairs": 100000,
+      "valid_pairs": 99949,
+      "true_rho": 0.8535381310694701,
+      "permuted_mean": 0.0019452142766139384,
+      "permuted_sd": 0.0035898027007245756,
+      "permuted_p05": -0.0028731011317277865,
+      "permuted_p95": 0.00793394166859299,
+      "permutation_replicates": 20
+    },
+    {
+      "subtype": "H1N1",
+      "pair_seed": 7,
+      "requested_pairs": 100000,
+      "valid_pairs": 99956,
+      "true_rho": 0.852592795762767,
+      "permuted_mean": 0.00017063628020017916,
+      "permuted_sd": 0.0032743799268175966,
+      "permuted_p05": -0.0034479300981438993,
+      "permuted_p95": 0.00449728174047143,
+      "permutation_replicates": 20
+    },
+    {
+      "subtype": "H1N1",
+      "pair_seed": 123,
+      "requested_pairs": 100000,
+      "valid_pairs": 99938,
+      "true_rho": 0.8538528291095733,
+      "permuted_mean": 0.0010602813391862955,
+      "permuted_sd": 0.0034511038342867856,
+      "permuted_p05": -0.006077672097911528,
+      "permuted_p95": 0.004253548643597897,
+      "permutation_replicates": 20
+    },
+    {
+      "subtype": "H3N2",
+      "pair_seed": 42,
+      "requested_pairs": 100000,
+      "valid_pairs": 99751,
+      "true_rho": 0.6678185360221518,
+      "permuted_mean": 0.0008354897072627643,
+      "permuted_sd": 0.004621316632003375,
+      "permuted_p05": -0.0062387957351370555,
+      "permuted_p95": 0.007510722529846668,
+      "permutation_replicates": 20
+    },
+    {
+      "subtype": "H3N2",
+      "pair_seed": 7,
+      "requested_pairs": 100000,
+      "valid_pairs": 99752,
+      "true_rho": 0.6738246829743578,
+      "permuted_mean": 0.0002033915754317613,
+      "permuted_sd": 0.0029442256325581924,
+      "permuted_p05": -0.003445965303848428,
+      "permuted_p95": 0.004876137224833152,
+      "permutation_replicates": 20
+    },
+    {
+      "subtype": "H3N2",
+      "pair_seed": 123,
+      "requested_pairs": 100000,
+      "valid_pairs": 99737,
+      "true_rho": 0.6694297132236808,
+      "permuted_mean": -0.0008380650601412555,
+      "permuted_sd": 0.0032937359352220503,
+      "permuted_p05": -0.007099311408355309,
+      "permuted_p95": 0.00374679098676124,
+      "permutation_replicates": 20
+    }
+  ],
+  "aggregate": [
+    {
+      "subtype": "H1N1",
+      "true_rho_mean": 0.8533279186472701,
+      "true_rho_sd": 0.0006557918538692845,
+      "permuted_mean": 0.0010587106320001378,
+      "permuted_sd_across_pair_seeds": 0.000887290040899686,
+      "valid_pairs_mean": 99947.66666666667
+    },
+    {
+      "subtype": "H3N2",
+      "true_rho_mean": 0.6703576440733968,
+      "true_rho_sd": 0.003108736407170027,
+      "permuted_mean": 6.693874085109e-05,
+      "permuted_sd_across_pair_seeds": 0.0008450804233467994,
+      "valid_pairs_mean": 99746.66666666667
+    }
+  ],
+  "interpretation": "Permuting embeddings within subtype preserves the vector distribution and anisotropy but breaks record-embedding correspondence."
+}

@@ -1,0 +1,394 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\decimalpoint
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\newcommand{\Enc}{\operatorname{Enc}}
+\newcommand{\R}{\mathbb{R}}
+\emergencystretch=3em
+
+\title{Auditoría de la geometría molecular y temporal en representaciones latentes de AntigenLM para secuencias HA/NA de Influenza A}
+\author{
+Carlos Manuel Orrego-Franco
+\and
+Juan Carlos Riaño-Rojas
+}
+% TODO antes del envío: agregar afiliaciones institucionales, correo del autor de correspondencia y ORCID si la revista objetivo lo requiere.
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Los modelos de lenguaje de secuencias se utilizan cada vez más como representaciones compactas de virus de rápida evolución, pero sus geometrías latentes deben auditarse antes de tratarlas como espacios de estados biológicos o dinámicos. Analizamos representaciones locales de AntigenLM almacenadas en caché para 111,756 registros HA/NA de Influenza A de los subtipos H1N1 y H3N2, cada uno representado como un vector de estados ocultos promediados $z_i=\Enc_{\theta}(HA_i,NA_i)\in\R^{384}$. Dentro de cada subtipo, las correlaciones de Spearman estimadas por muestreo de pares muestran que la distancia euclidiana latente se asocia fuertemente con proxies nucleotídicos de distancia molecular: para la distancia de Hamming HA+NA, la media de $\rho$ es 0.8538 en H1N1 y 0.6678 en H3N2 a través de tres semillas aleatorias de muestreo de pares. En contraste, las correlaciones globales con la separación temporal absoluta son débiles ($\rho=0.0612$ y $0.1540$), lo cual es consistente con que la evolución de influenza no sigue una trayectoria cronológica unidimensional. El PCA revela una fuerte concentración de varianza ($n_{95}=3$ global, razón de participación 1.91), mientras que las estimaciones TwoNN después de deduplicación exacta HA+NA permanecen en un rango bajo de un solo dígito a través de tamaños muestrales y opciones de recorte. Los vecindarios latentes locales están enriquecidos temporalmente respecto a líneas base aleatorias emparejadas por subtipo después de la deduplicación: las diferencias temporales medianas de vecinos más cercanos son de 2 meses frente a 42--43 meses para pares aleatorios H1N1 y 35 meses para pares aleatorios H3N2. Controles focalizados de robustez muestran que estas correlaciones moleculares persisten después de la deduplicación exacta HA+NA y que la permutación dentro de subtipo de las etiquetas de mes de colección elimina el enriquecimiento temporal de corto alcance cuando el grafo de vecinos latentes se mantiene fijo. Estos resultados apoyan la afirmación más restringida de que la nube local de embeddings de AntigenLM está organizada molecularmente bajo los proxies de distancia de secuencia evaluados, es de baja dimensión bajo los diagnósticos aplicados y es localmente coherente en el tiempo. No establecen similitud antigénica, validez filogenética, calidad de generación de secuencias, relevancia para selección de cepas vacunales ni desempeño de pronóstico prospectivo.
+\end{abstract}
+
+\section{Introducción}
+
+El virus de Influenza A evoluciona mediante mutación, reasortamiento, selección inmune y cambios en el contexto epidemiológico. Las glicoproteínas de superficie hemaglutinina (HA) y neuraminidasa (NA) son centrales para la vigilancia porque influyen en la entrada a la célula huésped, la liberación viral, la identidad de subtipo y la deriva antigénica. Sin embargo, la distancia molecular de secuencia, el fenotipo antigénico y el éxito evolutivo futuro son objetos distintos: la cartografía antigénica y los ensayos serológicos son necesarios para medir directamente la distancia antigénica, y la similitud de secuencia por sí sola no sustituye esos datos \cite{smith2004mapping,bedford2014integrating}. Sustituciones específicas en HA pueden tener efectos antigénicos grandes \cite{koel2013substitutions}, lo que refuerza la necesidad de distinguir proxies moleculares de afirmaciones antigénicas.
+
+Los modelos de lenguaje para secuencias biológicas ofrecen una vía atractiva para resumir grandes colecciones de secuencias virales. Los modelos de lenguaje de proteínas han mostrado que el entrenamiento no supervisado sobre secuencias puede codificar información estructural y funcional \cite{rives2021biological}, y modelos de lenguaje de proteínas virales se han utilizado para estudiar escape evolutivo \cite{hie2021viral}. Modelos genómicos como DNABERT, Nucleotide Transformer y modelos de ADN de contexto largo extienden este programa de aprendizaje de representaciones a secuencias nucleotídicas \cite{ji2021dnabert,dallatorre2025nucleotide,nguyen2023hyenadna}. AntigenLM es un modelo de lenguaje de ADN reciente, enfocado en influenza y diseñado alrededor de la estructura de unidades funcionales y tareas de pronóstico HA/NA \cite{pei2026antigenlm}.
+
+Antes de usar una representación aprendida como espacio de estados para dinámicas evolutivas, su geometría debe evaluarse directamente. Un candidato útil a espacio de estados debería, como mínimo, organizar registros molecularmente similares, evitar colapsar en un artefacto ininterpretable de tiempo o composición de subtipo, y exhibir suficiente estructura de baja dimensión para hacer plausible el modelamiento posterior. Estos criterios son más débiles que una validación de pronóstico, pero son salvaguardas necesarias frente a tratar un embedding de alta dimensión como biológicamente significativo por mera afirmación.
+
+Este artículo es una auditoría geométrica de embeddings locales de AntigenLM almacenados en caché para registros HA/NA de Influenza A. Planteamos cuatro preguntas descriptivas. Primero, ¿la distancia euclidiana latente sigue la distancia molecular de secuencia dentro de cada subtipo? Segundo, ¿la distancia latente se comporta como distancia cronológica, o la estructura temporal es principalmente local? Tercero, ¿qué tan concentrada está la varianza del embedding bajo PCA? Cuarto, ¿los diagnósticos locales de dimensión intrínseca concuerdan cualitativamente con la imagen lineal de PCA? Intencionalmente no reproducimos la tubería de pronóstico de AntigenLM, no generamos secuencias, no optimizamos mutaciones, no inferimos cepas vacunales y no evaluamos pronósticos prospectivos.
+
+\section{Métodos}
+
+\subsection{Fuente de datos y alcance}
+
+El análisis utiliza registros HA/NA de Influenza A procesados localmente y derivados de datos GISAID \cite{shu2017gisaid}. Los registros se emparejaron por identificador de aislado durante el preprocesamiento y se retuvieron cuando HA, NA, subtipo, año y mes estaban disponibles después de filtros locales de calidad. La caché actual contiene 111,756 embeddings de registros recolectados entre 2000 y 2022: 46,125 registros H1N1 y 65,631 registros H3N2. Las secuencias completas no se imprimen en este manuscrito ni se redistribuyen en el paquete del artículo.
+
+El análisis se limita a las representaciones HA/NA almacenadas en caché y a metadatos agregados. No incluye ensayos de inhibición de la hemaglutinación, títulos de neutralización, coordenadas de mapas antigénicos, etiquetas de clado de Nextstrain, árboles filogenéticos, estratificación geográfica, metadatos de huésped ni resultados prospectivos de pronóstico posteriores a 2022.
+
+\subsection{Extracción local de embeddings}
+
+Cada registro fue codificado con el checkpoint local de predicción de estilo AntigenLM \path{prediction_sequence/pytorch_model.bin} usando una envoltura local de modelo/tokenizador reconstruida a partir de archivos de configuración. El tokenizador representa nucleótidos a nivel de carácter y usa tokens estructurales para subtipo, HA, NA, separador, fin de secuencia y relleno. Para un registro $i$, la entrada tiene la forma
+\[
+\begin{aligned}
+&\langle subtype\rangle \ \langle HA\rangle \ HA_i \ \langle sep\rangle \\
+&\quad \langle NA\rangle \ NA_i \ \langle eos\rangle .
+\end{aligned}
+\]
+El embedding es el promedio ponderado por la máscara de atención de los estados ocultos finales,
+\[
+z_i=\Enc_{\theta}(HA_i,NA_i)\in\R^{384}.
+\]
+Los metadatos de la caché registran el hash SHA256 del checkpoint
+\path{6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff}, longitud máxima de secuencia 4000, tamaño de lote de embedding 4 y ausencia de entradas faltantes en la caché entre los registros procesados válidos. Por tanto, esta auditoría local debe leerse como un análisis de la representación en caché, no como una reproducción oficial de todos los procedimientos de inferencia o pronóstico de AntigenLM.
+
+\subsection{Distancias}
+
+La distancia latente entre los registros $i$ y $j$ es euclidiana:
+\[
+d_Z(i,j)=\lVert z_i-z_j\rVert_2.
+\]
+La distancia temporal es la separación absoluta de fecha de colección en meses,
+\[
+d_T(i,j)=\left|12(y_i-y_j)+(m_i-m_j)\right|.
+\]
+Para una secuencia de segmento $x$ y $y$, la distancia de Hamming normalizada se calcula sobre el prefijo compartido cuando la diferencia de longitud es a lo sumo 5\% de la secuencia más larga:
+\[
+d_H(x,y)=\frac{1}{L}\sum_{\ell=1}^{L}\mathbf{1}\{x_\ell\neq y_\ell\},
+\]
+donde $L$ es la longitud más corta. Los pares que exceden la regla de tolerancia de longitud se omiten para ese cálculo de distancia molecular. La distancia de Hamming HA+NA es un promedio ponderado por longitud de las distancias de segmento HA y NA, con pesos dados por las longitudes más cortas de HA y NA en el par. Estas son proxies moleculares de distancia de secuencia. No son alineamientos biológicos curados ni distancias antigénicas.
+
+Un panel focalizado de robustez también calculó distancias de Hamming NA-only de nucleótidos y proxies simples de sensibilidad de Hamming de aminoácidos traducidos. Las cadenas de aminoácidos se obtuvieron mediante traducción en marco 0 de las cadenas nucleotídicas disponibles, con codones ambiguos mapeados a un símbolo de aminoácido desconocido y codones incompletos terminales descartados. Estas distancias traducidas se usan solo como análisis de sensibilidad. No deben interpretarse como alineamientos proteicos curados, validación a nivel de proteína, distancias de sitios antigénicos ni mediciones antigénicas.
+
+\subsection{Correlaciones con muestreo de pares}
+
+Las matrices completas de distancias de todos contra todos son inviables a esta escala. Por ello, muestreamos 200,000 pares no idénticos por subtipo para cada una de tres semillas aleatorias (42, 7 y 123). Todo el muestreo de pares se realizó dentro de subtipo para evitar que la separación entre subtipos fuera la fuente dominante de correlación. Para cada conjunto muestreado, calculamos la correlación de rangos de Spearman \cite{spearman1904} entre $d_Z$ y $d_T$, la distancia de Hamming HA o la distancia de Hamming HA+NA. Resumimos medias y desviaciones estándar entre semillas a través de las tres semillas aleatorias; estas desviaciones estándar no son intervalos de confianza por bootstrap. Los valores p no se enfatizan porque las distancias por pares son dependientes y conteos muy grandes de pares muestreados pueden hacer que efectos despreciables parezcan estadísticamente significativos. La misma escala de muestreo de pares y las mismas semillas se reutilizaron después de la deduplicación exacta HA+NA en el panel de robustez.
+
+\subsection{Deduplicación}
+
+Los duplicados exactos son comunes en datos de vigilancia viral. Para TwoNN, los análisis locales de vecindarios temporales y las correlaciones de pares de robustez, eliminamos pares de secuencias HA+NA duplicados exactos reteniendo el primer representante de cada par HA+NA exacto encontrado en el orden de la caché. Esto dejó 82,306 registros: 36,753 H1N1 y 45,553 H3N2. La tabla principal de correlaciones con muestreo de pares usa la caché completa, y la tabla de robustez reporta correlaciones deduplicadas. Esta deduplicación elimina únicamente duplicados exactos del par de secuencias HA+NA; no elimina casi duplicados, registros duplicados en solo un segmento ni variantes nucleotídicas equivalentes a nivel de aminoácidos.
+
+\subsection{Dimensión efectiva por PCA}
+
+El PCA se calculó a partir de la matriz de embeddings centrada usando el espectro exacto de covarianza \cite{jolliffe2002pca,jolliffe2016pca}. Reportamos $n_{80}$, $n_{90}$, $n_{95}$ y $n_{99}$, el número de componentes requeridos para explicar 80\%, 90\%, 95\% y 99\% de la varianza. También reportamos la razón de participación,
+\[
+PR=\frac{(\sum_i\lambda_i)^2}{\sum_i\lambda_i^2},
+\]
+donde $\lambda_i$ son autovalores positivos de la covarianza. La dimensión efectiva de PCA mide concentración lineal de varianza; no es idéntica a la dimensión intrínseca local ni a la dimensión de visualización.
+
+\subsection{Diagnóstico de dimensión intrínseca TwoNN}
+
+TwoNN estima dimensión intrínseca local a partir de razones entre distancias al segundo y al primer vecino más cercano \cite{facco2017intrinsic}. Para cada punto,
+\[
+\mu_i=\frac{r_{2,i}}{r_{1,i}},
+\qquad
+-\log(1-F_i)=d\log(\mu_i),
+\]
+donde $r_{1,i}$ y $r_{2,i}$ son distancias a vecinos más cercanos después de estandarizar coordenadas del embedding, y $F_i$ es la función de distribución acumulada empírica de $\mu$. Evaluamos tamaños muestrales de 5,000, 10,000, 20,000 y 50,000 después de deduplicación exacta HA+NA, con semillas 42, 7 y 123 y niveles de recorte 0.01 y 0.05. El resultado se interpreta como un rango de sensibilidad, no como una dimensión exacta de variedad. Estimadores alternativos, como métodos de máxima verosimilitud de Levina-Bickel y DANCo, se discuten como controles futuros de robustez \cite{levina2005maximum,ceruti2014danco}.
+
+\subsection{Vecindarios temporales locales}
+
+Para cada subtipo después de la deduplicación exacta HA+NA, calculamos vecinos más cercanos euclidianos en el espacio latente para $k=5,10,20$. Las coincidencias consigo mismo se excluyeron solicitando $k+1$ vecinos y retirando el primer vecino devuelto. Comparamos diferencias absolutas de índice de mes entre cada registro y sus $k$ vecinos latentes principales contra pares aleatorios emparejados por subtipo con el mismo número de comparaciones. Como variante de control negativo, mantuvimos fijo el grafo de vecinos latentes pero permutamos las etiquetas de índice de mes de colección dentro de subtipo a través de tres semillas. Las líneas base aleatoria y de permutación de fechas controlan las distribuciones de fecha específicas por subtipo, pero no todas las posibles fuentes de sesgo de muestreo, como geografía, huésped, intensidad de colección, composición de linaje o longitud de secuencia.
+
+\section{Resultados}
+
+\subsection{Composición del conjunto de datos}
+
+El conjunto en caché contiene 111,756 embeddings de dimensión 384, con 46,125 registros H1N1 y 65,631 registros H3N2. Los registros procesados se distribuyen de manera desigual entre años, reflejando intensidad de vigilancia e historias de muestreo específicas por subtipo (Figura~\ref{fig:data-year}). Las distribuciones de longitud de HA y NA se concentran cerca de las longitudes esperadas de los segmentos, pero incluyen variación específica por subtipo y por registro (Figura~\ref{fig:lengths}). Los duplicados exactos HA+NA son frecuentes: 9,372 registros H1N1 y 20,078 registros H3N2 se eliminan mediante deduplicación exacta HA+NA.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{figures/records_by_year_subtype.pdf}
+\caption{Registros procesados por año y subtipo. Los conteos reflejan el conjunto local procesado, derivado de GISAID, de HA/NA usado para construir la caché.}
+\label{fig:data-year}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/sequence_length_distributions.pdf}
+\caption{Distribuciones de longitud de secuencia nucleotídica HA y NA por subtipo después del preprocesamiento local y los filtros de calidad.}
+\label{fig:lengths}
+\end{figure}
+
+\subsection{La distancia latente sigue la distancia molecular mucho más fuertemente que el tiempo global}
+
+Dentro de cada subtipo, la distancia euclidiana latente está fuertemente asociada con la distancia de Hamming nucleotídica, especialmente para el proxy combinado HA+NA (Tabla~\ref{tab:spearman}, Figura~\ref{fig:spearman}). Las correlaciones de Hamming HA+NA son 0.8538 para H1N1 y 0.6678 para H3N2. Las correlaciones HA-only también son sustanciales: 0.8280 para H1N1 y 0.6082 para H3N2. Estos valores apoyan una afirmación de organización molecular para la geometría local del embedding.
+
+En contraste, las correlaciones con la separación temporal absoluta son débiles: 0.0612 para H1N1 y 0.1540 para H3N2. Esto no implica ausencia de estructura evolutiva. No debería esperarse que una población viral ramificada, reasortante y muestreada espacialmente se ubique sobre una sola línea cronológica en distancia euclidiana latente. La pregunta más relevante para modelamiento local posterior es si los vecindarios, más que todos los pares, son temporalmente coherentes.
+
+\begin{table}[H]
+\centering
+\caption{Correlaciones de Spearman con muestreo de pares entre distancia euclidiana latente y proxies temporales o moleculares de distancia de secuencia. Los valores resumen tres semillas aleatorias de muestreo de pares, con 200,000 pares solicitados por subtipo y por semilla; las desviaciones estándar reportadas son desviaciones estándar entre semillas, no intervalos de confianza. Los pares moleculares pueden omitirse cuando falla la regla de tolerancia de longitud.}
+\label{tab:spearman}
+\begin{tabular}{llrrr}
+\toprule
+Métrica & Subtipo & media de $\rho$ & sd de $\rho$ & pares válidos \\
+\midrule
+Distancia temporal & H1N1 & 0.0612 & 0.0009 & 200000 \\
+Distancia temporal & H3N2 & 0.1540 & 0.0008 & 200000 \\
+Hamming HA & H1N1 & 0.8280 & 0.0009 & 199914 \\
+Hamming HA & H3N2 & 0.6082 & 0.0005 & 199989 \\
+Hamming HA+NA & H1N1 & 0.8538 & 0.0006 & 199903 \\
+Hamming HA+NA & H3N2 & 0.6678 & 0.0014 & 199538 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/spearman_latent_vs_distances.pdf}
+\caption{Resumen de correlación de Spearman para distancia euclidiana latente frente a proxies temporales y moleculares de distancia de secuencia. Las correlaciones se calculan dentro de subtipo y se resumen a través de semillas aleatorias de muestreo de pares.}
+\label{fig:spearman}
+\end{figure}
+
+\subsection{PCA muestra fuerte concentración lineal de varianza}
+
+El espectro global de embeddings está altamente concentrado (Tabla~\ref{tab:pca}, Figura~\ref{fig:pca-spectrum}). Dos componentes explican al menos 90\% de la varianza global, tres explican al menos 95\% y 10 explican al menos 99\%. La razón de participación global es 1.91. Los espectros específicos por subtipo también están concentrados: H1N1 alcanza 95\% de varianza en tres componentes y H3N2 en cinco componentes.
+
+Este resultado debe interpretarse como fuerte anisotropía y baja dimensión efectiva lineal. Por sí solo, no prueba que los datos reposen sobre una variedad biológica suave de baja dimensión. Las primeras componentes principales pueden reflejar una mezcla de direcciones moleculares, específicas por subtipo, temporales, de densidad de muestreo e inducidas por el modelo.
+
+\begin{table}[H]
+\centering
+\caption{Dimensión efectiva por PCA de los embeddings de AntigenLM. $n_q$ denota el número de componentes principales requerido para explicar la fracción $q$ de varianza; PR es la razón de participación del espectro de covarianza.}
+\label{tab:pca}
+\begin{tabular}{lrrrrrr}
+\toprule
+Grupo & n & $n_{80}$ & $n_{90}$ & $n_{95}$ & $n_{99}$ & PR \\
+\midrule
+global & 111,756 & 2 & 2 & 3 & 10 & 1.91 \\
+H1N1 & 46,125 & 1 & 2 & 3 & 11 & 1.43 \\
+H3N2 & 65,631 & 1 & 3 & 5 & 16 & 1.53 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_scree_global.pdf}
+\caption{Gráfico de sedimentación global.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_cumulative_global.pdf}
+\caption{Varianza acumulada global.}
+\end{subfigure}
+\caption{Espectro global de PCA. El espectro está marcadamente concentrado, lo que apoya una baja dimensión efectiva lineal, pero no establece la dimensión intrínseca de una variedad.}
+\label{fig:pca-spectrum}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_2d_by_subtype.pdf}
+\caption{Coloreado por subtipo.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_2d_by_year.pdf}
+\caption{Coloreado por año.}
+\end{subfigure}
+\caption{Proyección global PCA bidimensional. La proyección es descriptiva y no debe leerse como una representación completa de relaciones evolutivas o antigénicas.}
+\label{fig:pca-2d}
+\end{figure}
+
+\subsection{Las estimaciones TwoNN son bajas pero sensibles al recorte}
+
+TwoNN proporciona un diagnóstico local de vecinos más cercanos que complementa el espectro lineal de PCA. Después de la deduplicación exacta HA+NA, la dimensión estimada permanece estable a través de tamaños muestrales, pero cambia con el nivel de recorte (Tabla~\ref{tab:twonn}, Figura~\ref{fig:twonn}). Con recorte 0.01, las estimaciones son aproximadamente 3.85--3.90; con recorte 0.05, son aproximadamente 5.40--5.50. Los valores medios de $R^2$ están cerca de 0.97--0.98.
+
+La conclusión clave no es una única dimensión exacta. Más bien, PCA y TwoNN concuerdan cualitativamente en que la representación nominal de 384 dimensiones tiene una estructura efectiva mucho menor bajo las opciones de preprocesamiento evaluadas. La sensibilidad al recorte es informativa: las estimaciones de dimensión intrínseca deben reportarse como diagnósticos con supuestos, no como constantes biológicas fijas.
+
+\begin{table}[H]
+\centering
+\caption{Sensibilidad de la dimensión intrínseca TwoNN después de deduplicación exacta HA+NA. Los valores resumen tres semillas aleatorias para cada tamaño muestral y nivel de recorte.}
+\label{tab:twonn}
+\begin{tabular}{rrrr}
+\toprule
+Tamaño muestral & recorte & media de dimensión & media de $R^2$ \\
+\midrule
+5,000 & 0.01 & 3.89 & 0.981 \\
+5,000 & 0.05 & 5.50 & 0.972 \\
+10,000 & 0.01 & 3.88 & 0.978 \\
+10,000 & 0.05 & 5.49 & 0.972 \\
+20,000 & 0.01 & 3.85 & 0.978 \\
+20,000 & 0.05 & 5.45 & 0.971 \\
+50,000 & 0.01 & 3.90 & 0.980 \\
+50,000 & 0.05 & 5.40 & 0.970 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/twonn_sensitivity.pdf}
+\caption{Sensibilidad al tamaño muestral y al recorte.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/twonn_fit_example.pdf}
+\caption{Ejemplo de ajuste lineal.}
+\end{subfigure}
+\caption{Diagnósticos TwoNN de dimensión intrínseca después de deduplicación exacta HA+NA. Las estimaciones deben interpretarse como un rango de sensibilidad porque los métodos de dimensión intrínseca basados en vecinos más cercanos se ven afectados por densidad, anisotropía, recorte y efectos de muestra finita.}
+\label{fig:twonn}
+\end{figure}
+
+\subsection{La estructura temporal es local más que cronológica global}
+
+Aunque las correlaciones temporales globales son débiles, los vecinos latentes más cercanos están mucho más próximos en el tiempo que los pares aleatorios emparejados por subtipo después de la deduplicación exacta HA+NA (Tabla~\ref{tab:temporal-local}, Figura~\ref{fig:temporal-local}). Para H1N1, la diferencia temporal mediana entre vecinos latentes es de 2 meses a través de $k=5,10,20$, comparada con 42--43 meses para pares aleatorios emparejados por subtipo. Para H3N2, las medianas correspondientes son de 2 meses para vecinos latentes y 35 meses para pares aleatorios.
+
+Este resultado apoya coherencia temporal local en la nube de embeddings. No muestra que el espacio latente sea un modelo de pronóstico ni descarta efectos de densidad de muestreo. Sí indica que la organización molecular observada en las correlaciones de distancia está acompañada por enriquecimiento temporal de corto alcance en vecindarios locales.
+
+\begin{table}[H]
+\centering
+\caption{Coherencia temporal local de vecinos latentes más cercanos después de deduplicación exacta HA+NA. Las líneas base aleatorias están emparejadas por subtipo y usan el mismo número de comparaciones que el conjunto de vecinos correspondiente.}
+\label{tab:temporal-local}
+\begin{tabular}{lrrrr}
+\toprule
+Subtipo & k & mediana NN meses & mediana aleatoria meses & razón \\
+\midrule
+H1N1 & 5 & 2.00 & 43.00 & 0.047 \\
+H1N1 & 10 & 2.00 & 42.00 & 0.048 \\
+H1N1 & 20 & 2.00 & 42.00 & 0.048 \\
+H3N2 & 5 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 10 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 20 & 2.00 & 35.00 & 0.057 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/temporal_local_neighbors_h1n1_dedup.pdf}
+\caption{H1N1.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/temporal_local_neighbors_h3n2_dedup.pdf}
+\caption{H3N2.}
+\end{subfigure}
+\caption{Diferencias temporales de vecinos latentes más cercanos frente a líneas base aleatorias emparejadas por subtipo después de deduplicación exacta HA+NA.}
+\label{fig:temporal-local}
+\end{figure}
+
+\subsection{Controles focalizados de robustez apoyan las afirmaciones geométricas principales}
+
+La deduplicación exacta HA+NA reduce, pero no elimina, la señal de distancia molecular (Tabla~\ref{tab:robust-spearman}). Después de la deduplicación, las correlaciones de Hamming nucleotídico HA+NA siguen siendo altas: 0.8358 para H1N1 y 0.6315 para H3N2. Las correlaciones nucleotídicas NA-only son menores que las correlaciones HA-only en ambos subtipos, mientras que el proxy nucleotídico combinado HA+NA permanece como el resumen de distancia nucleotídica más fuerte. El proxy simple de sensibilidad HA+NA de aminoácidos traducidos también permanece sustancialmente correlacionado con la distancia latente, aunque debe interpretarse con cautela porque no se basa en alineamientos proteicos curados.
+
+\begin{table}[H]
+\centering
+\caption{Panel focalizado de robustez después de deduplicación exacta HA+NA. Los valores son correlaciones de Spearman con muestreo de pares resumidas a través de las semillas 42, 7 y 123 con 200,000 pares solicitados por subtipo y por semilla; las desviaciones estándar reportadas son desviaciones estándar entre semillas, no intervalos de confianza. Las distancias de aminoácidos usan traducción simple en marco 0 y se incluyen solo como proxies de sensibilidad, no como alineamientos proteicos curados.}
+\label{tab:robust-spearman}
+\begin{tabular}{llrr}
+\toprule
+Métrica & Subtipo & media de $\rho$ & sd de $\rho$ \\
+\midrule
+Distancia temporal & H1N1 & 0.0690 & 0.0031 \\
+Distancia temporal & H3N2 & 0.1497 & 0.0017 \\
+Hamming HA de nucleótidos & H1N1 & 0.8086 & 0.0013 \\
+Hamming HA de nucleótidos & H3N2 & 0.5883 & 0.0006 \\
+Hamming NA de nucleótidos & H1N1 & 0.7677 & 0.0010 \\
+Hamming NA de nucleótidos & H3N2 & 0.5287 & 0.0025 \\
+Hamming HA+NA de nucleótidos & H1N1 & 0.8358 & 0.0010 \\
+Hamming HA+NA de nucleótidos & H3N2 & 0.6315 & 0.0015 \\
+Proxy HA+NA de aminoácidos traducidos & H1N1 & 0.7563 & 0.0013 \\
+Proxy HA+NA de aminoácidos traducidos & H3N2 & 0.6131 & 0.0008 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El resultado de vecindarios temporales también es robusto a un control de permutación de etiquetas de fecha (Tabla~\ref{tab:temporal-permutation}). Mantener fijo el grafo de vecinos latentes pero permutar las etiquetas de índice de mes de colección dentro de subtipo aumenta las diferencias temporales medianas entre vecinos de 2 meses a 42--43 meses en H1N1 y 35 meses en H3N2, igualando la línea base aleatoria por subtipo. Esto apoya la interpretación de que la coherencia temporal local está ligada a las fechas de colección observadas y no solo a la distribución marginal de fechas, bajo este control específico de permutación dentro de subtipo.
+
+\begin{table}[H]
+\centering
+\caption{Control de permutación de etiquetas de fecha para vecindarios temporales locales después de deduplicación exacta HA+NA. El grafo de vecinos latentes se mantiene fijo y las etiquetas de índice de mes de colección se permutan dentro de subtipo a través de las semillas 42, 7 y 123.}
+\label{tab:temporal-permutation}
+\begin{tabular}{lrrrr}
+\toprule
+Subtipo & k & mediana verdadera meses & mediana permutada meses & verdadero/permutado \\
+\midrule
+H1N1 & 5 & 2.00 & 42.33 & 0.047 \\
+H1N1 & 10 & 2.00 & 42.67 & 0.047 \\
+H1N1 & 20 & 2.00 & 42.67 & 0.047 \\
+H3N2 & 5 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 10 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 20 & 2.00 & 35.00 & 0.057 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discusión}
+
+Esta auditoría apoya una interpretación cautelosa pero útil de la nube local de embeddings de AntigenLM. El resultado más fuerte es molecular: la distancia euclidiana latente está altamente asociada por rangos con las distancias de Hamming nucleotídicas HA y HA+NA dentro de subtipo. Esto indica que la representación no es simplemente una caja negra de alta dimensión para estos registros; su geometría métrica captura una cantidad sustancial de variación en la secuencia de entrada.
+
+El panel de robustez fortalece esta interpretación dentro de los límites de los controles realizados. Las correlaciones moleculares persisten después de la deduplicación exacta HA+NA, y el patrón no se restringe a HA solamente: las correlaciones NA-only también son sustanciales, aunque menores que las de HA-only en este panel. El proxy simple de sensibilidad de aminoácidos traducidos da un resultado cualitativamente similar, aunque sigue siendo menos definitivo que un análisis de alineamiento proteico curado.
+
+Los resultados temporales aclaran qué tipo de estructura evolutiva está presente. La distancia cronológica global se correlaciona débilmente con la distancia latente, lo cual es esperable para una población viral ramificada y muestreada de manera desigual. Los vecindarios locales, sin embargo, son temporalmente coherentes después de la deduplicación exacta HA+NA. El control de permutación de etiquetas de fecha dentro de subtipo devuelve las diferencias temporales medianas entre vecinos a valores similares a los aleatorios cuando el grafo de vecinos latentes se mantiene fijo, lo que indica que la señal temporal local depende de las etiquetas temporales observadas y no solo de la distribución marginal de fechas de colección. Para modelamiento dinámico futuro, este resultado local es más relevante que la correlación global con el tiempo, porque un modelo de espacio de estados normalmente dependería de transiciones locales o vecindarios locales, no de tratar todos los pares de años como ubicados sobre una sola línea.
+
+PCA y TwoNN dan evidencia complementaria de estructura efectiva de baja dimensión. PCA muestra que la varianza se concentra en pocas direcciones dominantes, mientras que TwoNN sugiere baja dimensión local bajo razones de vecinos más cercanos estandarizadas. Estos son diagnósticos alentadores para modelamiento reducido, pero no son una prueba matemática de una variedad suave ni de la dimensión correcta para un modelo dinámico posterior.
+
+Los resultados se describen mejor como validación de una precondición geométrica estrecha: los embeddings en caché están organizados molecularmente, son anisotrópicos/de baja dimensión bajo los diagnósticos evaluados y están enriquecidos localmente en el tiempo. Esto es suficiente para motivar trabajo adicional, pero no para afirmar predicción antigénica, relevancia vacunal o pronóstico prospectivo.
+
+\section{Limitaciones}
+
+La limitación más importante es biológica. La distancia de Hamming nucleotídica es un proxy de similitud molecular de secuencia, no un alineamiento curado, una comparación estructural de proteínas ni una medida experimental de distancia antigénica. Este artículo no incluye alineamientos múltiples de secuencias curados, títulos de ensayos HI, mediciones de neutralización, coordenadas de cartografía antigénica, etiquetas de clado, distancias filogenéticas ni mediciones de aptitud. Por tanto, no puede establecer similitud antigénica, escape inmune, éxito de clado, validez filogenética ni relevancia para cepas vacunales.
+
+La segunda limitación es metodológica. Las correlaciones de Spearman resumen asociación global por rangos sobre pares muestreados, pero las distancias por pares son dependientes y no evalúan por completo la fidelidad de vecindarios locales. Las desviaciones estándar reportadas son resúmenes entre semillas a través de tres semillas aleatorias, no intervalos de confianza por bootstrap. Los controles deduplicado y de permutación de fechas reducen dos preocupaciones obvias, pero no se incluye un control de embeddings aleatorios, embeddings aleatorios con espectro emparejado, embeddings blanqueados por PCA ni checkpoint no entrenado. Diagnósticos adicionales como pruebas tipo Mantel, correlación de distancia, precisión de recuperación kNN, análisis locales por cuantiles de distancia y medidas de trustworthiness/continuity proporcionarían un marco más fuerte de validación métrica \cite{mantel1967detection,szekely2007distance,lee2009quality}. Estos análisis más amplios de preservación de rangos no están presentes actualmente en los resultados del repositorio.
+
+El análisis de robustez con aminoácidos traducidos también es limitado. Usa traducción simple en marco 0 de las cadenas nucleotídicas disponibles, mapea codones ambiguos a un símbolo desconocido y descarta codones incompletos terminales. Es un análisis de sensibilidad para evaluar si la señal molecular amplia persiste bajo una representación traducida cruda; no es extracción proteica curada, alineamiento múltiple de secuencias, análisis de sitios antigénicos ni validación a nivel de proteína.
+
+La tercera limitación concierne a la dimensión intrínseca. La dimensión efectiva de PCA puede estar impulsada por anisotropía, estructura de subtipo, desbalance de muestreo o direcciones dominantes inducidas por el modelo. TwoNN puede verse afectado por duplicados exactos y casi duplicados, densidad no uniforme, efectos de frontera, muestras finitas, estandarización de coordenadas y recorte. Por tanto, los resultados actuales deben leerse como evidencia de estructura de baja dimensión bajo diagnósticos específicos, no como una estimación exacta de dimensión intrínseca.
+
+La cuarta limitación es el sesgo de vigilancia. La disponibilidad de secuencias derivadas de GISAID varía por año, ubicación, práctica de laboratorio, huésped y contexto de salud pública. La línea base aleatoria actual emparejada por subtipo no controla geografía, huésped, intensidad de colección ni composición de linaje. La coherencia temporal local puede reflejar parcialmente ráfagas de muestreo denso alrededor de brotes o campañas de vigilancia.
+
+Finalmente, esto no es una reproducción del protocolo completo de pronóstico de AntigenLM. No decodifica ni genera secuencias, no puntúa mutaciones candidatas, no compara contra recomendaciones vacunales de la OMS, no evalúa pronósticos prospectivos posteriores a 2022 ni compara contra métodos de pronóstico filogenético como modelos de aptitud o predictores de forma de árbol \cite{luksza2014fitness,neher2014predicting,hadfield2018nextstrain}.
+
+\section{Reproducibilidad y disponibilidad de datos}
+
+La tubería local de análisis está basada en scripts. Los embeddings fueron producidos por \path{latent_geometry.py}, las métricas y figuras de datos completos por \path{latent_geometry_full_analysis.py}, y el paquete del artículo por \path{make_paper_1_latent_geometry_full.py}. El panel focalizado de robustez se ejecutó con \path{paper_revision_outputs/run_robustness_panel.py}. Los resultados agregados primarios están almacenados en \path{results/latent_geometry_full_metrics.json} y resumidos en \path{results/latent_geometry_full_summary.md}; los resultados de robustez están almacenados en \path{paper_revision_outputs/robustness_panel_results.json} y \path{paper_revision_outputs/robustness_panel_summary.md}. Las tablas y figuras del manuscrito se generan a partir de salidas agregadas y se copian al directorio del artículo.
+
+La redistribución de secuencias crudas puede estar restringida por los términos de la fuente original de datos. Por esa razón, este manuscrito reporta métricas agregadas, conteos, tablas y figuras, en lugar de secuencias completas. Una versión de envío debería proporcionar código público y salidas agregadas donde esté permitido, además de instrucciones para que usuarios autorizados de los datos reconstruyan el conjunto procesado y la caché de embeddings. La procedencia del checkpoint local de AntigenLM, la ruta o forma de acceso y la suma de verificación deben documentarse explícitamente para el envío. Cualquier declaración final de disponibilidad de datos también debe seguir los términos aplicables de reconocimiento y uso de datos de GISAID, sin redistribuir secuencias completas restringidas.
+
+\section{Ética, bioseguridad y uso responsable}
+
+Este trabajo es un análisis de embeddings existentes de secuencias de influenza. No genera secuencias virales, no optimiza mutaciones, no sintetiza constructos, no proporciona protocolos experimentales, no hace recomendaciones vacunales ni aconseja decisiones clínicas o de salud pública. Cualquier uso futuro de representaciones aprendidas para pronóstico, priorización de cepas o interpretación antigénica debe evaluarse con validación prospectiva apropiada, revisión de dominio y gobernanza de bioseguridad.
+
+\section{Conclusión}
+
+Las representaciones locales en caché de AntigenLM para registros HA/NA de Influenza A muestran fuerte organización molecular bajo proxies de Hamming nucleotídico, asociación cronológica global débil, claro enriquecimiento temporal de vecindarios locales y baja dimensión efectiva bajo diagnósticos PCA y TwoNN. Controles focalizados de robustez muestran que las correlaciones moleculares persisten después de deduplicación exacta HA+NA y que la permutación de etiquetas de fecha dentro de subtipo elimina el enriquecimiento temporal local observado cuando el grafo de vecinos latentes se mantiene fijo. Estos hallazgos convierten la nube de embeddings en un espacio de estados candidato plausible para modelamiento probabilístico futuro. Deben tratarse como una precondición geométrica, no como evidencia de validez antigénica, confiabilidad de generación de secuencias, relevancia para cepas vacunales o habilidad de pronóstico prospectivo.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

@@ -1,16 +1,42 @@
+# Large binary files - do not commit
+*.npz
 *.bin
+*.pt
+*.pth
+*.h5
+*.hdf5
+*.pkl
+
+# Raw sequence data - never commit if subject to GISAID restrictions
+*.fasta
+*.fa
+*.fastq
+data/raw/
+sequences/
+
+# Local data/checkpoint directories
 data/
+checkpoints/
+prediction_sequence/
+subtype_classifier/*.bin
+
+# Python cache and environments
 __pycache__/
-venv/
-venv_antigenlm/
-.ipynb_checkpoints/
-.DS_Store
-.env
 *.pyc
 *.pyo
 *.pyd
 .Python
+.env
 env/
+venv/
+venv_antigenlm/
+.ipynb_checkpoints/
+
+# Local agent/tooling state
+.claude/
+.codex_tmp*/
+
+# Build/distribution artifacts
 build/
 develop-eggs/
 dist/
@@ -28,3 +54,21 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Local archives and generated LaTeX auxiliaries
+archive/exports/
+*.aux
+*.blg
+*.log
+*.out
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+
+# Parquet y caché de build
+*.parquet
+FluGenome3D/.next/
+
+# Excepción: logs de resultados sí se versionan
+!results/*.log

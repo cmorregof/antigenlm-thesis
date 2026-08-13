@@ -1,0 +1,479 @@
+% !TeX program = pdflatex
+% Documento listo para compilar en Overleaf.
+% Autor: Carlos Manuel Orrego Franco
+% Version actualizada no destructiva a partir del documento maestro.
+
+\documentclass[12pt,letterpaper]{article}
+
+% ---------------------------------------------------------
+% Paquetes basicos
+% ---------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{csquotes}
+
+% ---------------------------------------------------------
+% Configuracion de pagina e hipervinculos
+% ---------------------------------------------------------
+\geometry{margin=2.7cm}
+\onehalfspacing
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!45!black,
+    citecolor=blue!45!black,
+    urlcolor=blue!45!black,
+    pdftitle={Actualizacion del proyecto de tesis de maestria},
+    pdfauthor={Carlos Manuel Orrego Franco}
+}
+
+% ---------------------------------------------------------
+% Comandos utiles
+% ---------------------------------------------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\HA}{\mathrm{HA}}
+\newcommand{\NA}{\mathrm{NA}}
+\newcommand{\Enc}{\mathrm{Enc}}
+\newcommand{\AntigenLM}{\mathrm{AntigenLM}}
+\newcommand{\Hhist}{\mathcal{H}}
+\newcommand{\Fviab}{F_{\mathrm{viab}}}
+\newcommand{\Fescape}{F_{\mathrm{escape}}}
+
+\newenvironment{escenario}[1]{%
+    \vspace{0.5em}
+    \noindent\textbf{#1}\par\smallskip
+    \begin{quote}
+}{%
+    \end{quote}
+}
+
+% ---------------------------------------------------------
+% Datos del documento
+% ---------------------------------------------------------
+\title{\textbf{Documento de trabajo --- Tesis de Maestria}\\[0.4em]
+\large Modelado estocastico de la deriva antigenica de Influenza A en el espacio latente de AntigenLM}
+\author{Carlos Manuel Orrego Franco\\
+Maestria en Matematica Aplicada\\
+Universidad Nacional de Colombia}
+\date{Ultima actualizacion: abril de 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento presenta una actualizacion del proyecto de tesis de maestria. La propuesta consiste en estudiar si la evolucion antigenica de Influenza A puede modelarse como una dinamica estocastica continua sobre el espacio latente de AntigenLM. Antes de formular o entrenar una SDE como modelo predictivo, se realiza una auditoria geometrica del espacio latente para verificar si preserva estructura molecular relevante, si tiene dimension manejable y si sus distancias admiten una interpretacion biologica razonable. En lugar de producir solamente una prediccion puntual de la cepa dominante del mes siguiente, el objetivo final es construir un marco probabilistico sobre trayectorias evolutivas posibles, permitiendo cuantificar incertidumbre y extender el horizonte predictivo a varios meses.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{El problema}
+% =========================================================
+
+La Influenza A, en particular los subtipos H3N2 y H1N1, evoluciona continuamente por acumulacion de mutaciones en sus proteinas de superficie: Hemaglutinina (HA) y Neuraminidasa (NA). Este proceso, conocido como \emph{deriva antigenica} o \emph{antigenic drift}, obliga a la Organizacion Mundial de la Salud a actualizar la vacuna estacional anualmente.
+
+Los modelos actuales de prediccion antigenica presentan dos limitaciones fundamentales:
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=2.2em]
+    \item \textbf{Son discretos:} predicen una cepa puntual para el mes siguiente, sin cuantificar incertidumbre.
+    \item \textbf{Tienen horizonte fijo:} predicen exactamente un mes, o una temporada, hacia adelante. No pueden extenderse naturalmente a horizontes de seis o doce meses, que corresponden al \emph{lead time} real que necesita la industria de vacunas.
+\end{enumerate}
+
+El articulo AntigenLM \cite{pei2026antigenlm} representa el estado del arte actual. Entrena un modelo de lenguaje tipo GPT sobre genomas completos de Influenza A y lo ajusta para tareas de prediccion asociadas a cepas dominantes futuras. Aunque supera a \emph{baselines} existentes, conserva dos limitaciones importantes para la vigilancia antigenica: prediccion esencialmente puntual y horizonte temporal fijo.
+
+% =========================================================
+\section{La propuesta}
+% =========================================================
+
+La propuesta central de esta tesis es evaluar si la evolucion antigenica puede modelarse como una \textbf{dinamica estocastica continua} sobre el espacio latente de AntigenLM.
+
+La SDE no se asume como valida de entrada. Se plantea como una hipotesis metodologica condicionada a que el espacio latente satisfaga propiedades geometricas minimas: preservacion de similitud molecular, regularidad local y dimension efectiva manejable. Por ello, la primera contribucion tecnica de la tesis es una auditoria geometrica del espacio latente.
+
+En lugar de predecir unicamente ``cual es la cepa del mes siguiente'', es decir, una prediccion discreta, se propone estudiar ``como se mueve el virus en el espacio de representaciones a lo largo del tiempo'', es decir, una dinamica continua que eventualmente pueda producir distribuciones sobre trayectorias.
+
+\subsection{Variable de estado}
+
+Sea
+\begin{equation}
+    z_t = \Enc_{\AntigenLM}(\HA_t, \NA_t) \in \R^{384}.
+\end{equation}
+
+El vector $z_t$ corresponde a una representacion interna que AntigenLM produce al procesar la secuencia HA+NA de una cepa viral. No es una secuencia discreta, sino un punto en un espacio continuo de 384 dimensiones. La evidencia geometrica reciente sugiere que este espacio preserva similitud molecular de forma no trivial; sin embargo, esto aun no prueba que una SDE entrenada sobre dicho espacio funcione como modelo predictivo.
+
+\subsection{Ecuacion de evolucion}
+
+Condicional a que la auditoria geometrica respalde el uso de $z_t$ como variable de estado, se propone estudiar una ecuacion diferencial estocastica de la forma
+
+\begin{equation}
+    dz_t = \mu(z_t,t,\Hhist_t)\,dt + \Sigma(z_t)\,dW_t,
+    \label{eq:sde}
+\end{equation}
+
+donde:
+
+\begin{itemize}[leftmargin=2em]
+    \item $\mu$ es el termino de deriva, que representa la direccion promedio de la evolucion;
+    \item $\Sigma$ es el termino de difusion, que modela la estocasticidad asociada a las mutaciones;
+    \item $W_t$ es un proceso de Wiener, es decir, ruido browniano;
+    \item $\Hhist_t$ representa la historia de cepas anteriores.
+\end{itemize}
+
+\subsection{Estructura del drift}
+
+La contribucion original que se evaluara consiste en proponer una estructura del drift dada por
+
+\begin{equation}
+    \mu(z_t,t,\Hhist_t)
+    = \alpha \nabla \Fviab(z_t)
+    + \beta \nabla \Fescape(z_t,\Hhist_t).
+    \label{eq:drift}
+\end{equation}
+
+Aqui:
+
+\begin{itemize}[leftmargin=2em]
+    \item $\Fviab$ es un funcional de viabilidad. Su gradiente buscaria empujar la dinamica hacia regiones del espacio latente asociadas con cepas biologicamente funcionales.
+    \item $\Fescape$ es un funcional de escape inmunologico. Su gradiente buscaria empujar la dinamica lejos de cepas historicas recientes, modelando de forma aproximada la presion de anticuerpos neutralizantes.
+    \item $\alpha$ y $\beta$ son parametros aprendibles que balancearian ambas presiones. Su interpretacion biologica solo sera defendible si los funcionales estan bien calibrados y sus escalas son comparables.
+\end{itemize}
+
+\subsection{Prediccion}
+
+El objetivo final no es predecir un unico punto $z_{t+1}$, sino integrar la ecuacion \eqref{eq:sde} desde $z_t$ hacia adelante y obtener una \textbf{distribucion sobre trayectorias posibles}. Sin embargo, la decodificacion directa de trayectorias latentes a secuencias mediante AntigenLM no se asumira como resuelta: AntigenLM es un modelo autoregresivo, no un autoencoder diseñado para decodificar puntos latentes arbitrarios.
+
+Por esta razon, la evaluacion considerara alternativas tecnicamente mas controladas, incluyendo \emph{scoring} y \emph{ranking} de cepas candidatas reales mediante log-verosimilitud condicional, ademas de metricas en espacio latente. La generacion autoregresiva libre se tratara como diagnostico exploratorio, no como replica cientifica del paper ni como resultado principal.
+
+% =========================================================
+\section{Diferencia con AntigenLM}
+% =========================================================
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm}XX}
+\toprule
+Aspecto & AntigenLM & Esta tesis \\
+\midrule
+Espacio & Secuencias discretas & $\R^{384}$ continuo, previa auditoria geometrica \\
+Mecanismo & Modelo autoregresivo tipo GPT & SDE tipo Langevin, condicionada a criterios go/no-go \\
+Salida & Prediccion o ranking asociado a cepa futura & Distribucion sobre trayectorias, si la geometria y evaluacion lo permiten \\
+Horizonte & Fijo: $t \to t+1$ & Variable: $t \to t+k$ \\
+Incertidumbre & No explicita & Si, mediante muestras de trayectorias \\
+Presion de escape & Implicita en los datos & Explicita mediante funcional, si la metrica latente es biologicamente interpretable \\
+Encoder & \emph{Finetuning} completo & Congelado inicialmente; posible proyeccion si la geometria lo exige \\
+\bottomrule
+\end{tabularx}
+\caption{Comparacion conceptual entre AntigenLM y la propuesta de tesis.}
+\label{tab:comparacion-antigenlm}
+\end{table}
+
+% =========================================================
+\section{Por que necesitamos probar la geometria del espacio latente}
+% =========================================================
+
+Para que la SDE propuesta tenga sentido matematico, es necesario que el espacio donde vive $z_t$ sea suficientemente regular. Esta no es una exigencia puramente formal: es una condicion necesaria para que la dinamica este bien definida y para que sus distancias tengan interpretacion biologica.
+
+Una SDE es una ecuacion diferencial. Las ecuaciones diferenciales requieren que el espacio donde operan tenga propiedades de regularidad. Si el espacio presenta discontinuidades, la ecuacion puede no tener solucion estable. Si contiene regiones degeneradas, la solucion puede existir pero ser inestable o biologicamente ininterpretable.
+
+En particular, se deben verificar tres propiedades.
+
+\subsection{Propiedad 1: continuidad local}
+
+La primera propiedad corresponde a continuidad local de tipo Lipschitz. Intuitivamente, pequenos cambios en $z$ deberian producir pequenos cambios en la secuencia o en las propiedades biologicas asociadas.
+
+\subsubsection*{Por que importa}
+
+Si el decoder de AntigenLM produce saltos abruptos, es decir, si dos puntos cercanos en $\R^{384}$ decodifican a cepas completamente distintas, la SDE generaria trayectorias que saltan entre cepas sin sentido biologico.
+
+\subsubsection*{Como se prueba}
+
+Se propone realizar interpolacion lineal entre dos cepas:
+
+\begin{equation}
+    z(\lambda) = (1-\lambda) z_a + \lambda z_b, \qquad \lambda \in [0,1].
+\end{equation}
+
+La interpolacion lineal es un control preliminar, pero no constituye por si sola una prueba de suavidad biologica. En particular, un coeficiente de variacion cercano a cero puede ser tautologico si solo mide pasos lineales dentro del propio espacio latente. La prueba debe complementarse con cambios en distancias biologicas, vecindad respecto a datos reales y validez de decodificacion.
+
+La referencia clave es Arvanitidis, Hansen y Hauberg \cite{arvanitidis2018latent}, quienes muestran que los espacios latentes de redes profundas poseen una geometria Riemanniana no trivial.
+
+\subsection{Propiedad 2: preservacion de metrica biologica}
+
+La segunda propiedad exige que cepas biologicamente similares esten geometricamente cerca en $\R^{384}$.
+
+\subsubsection*{Por que importa}
+
+La SDE usa la distancia en el espacio latente para definir funcionales como $\Fescape$. Si la distancia latente no refleja ninguna distancia biologica relevante, el funcional de escape no tiene interpretacion inmunologica.
+
+\subsubsection*{Como se prueba}
+
+Se calcula la correlacion de Spearman entre la distancia latente y una distancia biologica:
+
+\begin{equation}
+    \rho = \operatorname{Spearman}\left(\|z_i-z_j\|_2,\ d_{\mathrm{bio}}(i,j)\right),
+\end{equation}
+
+donde $d_{\mathrm{bio}}$ puede ser distancia de Hamming en HA, distancia de Hamming en HA+NA, distancia filogenetica o distancia temporal como proxy. Como criterio preliminar:
+
+\begin{itemize}[leftmargin=2em]
+    \item $\rho > 0.5$: correlacion fuerte;
+    \item $\rho > 0.3$: correlacion moderada;
+    \item $\rho > 0.1$: correlacion debil;
+    \item $\rho < 0.1$: sin correlacion relevante.
+\end{itemize}
+
+Esta correlacion debe calcularse \textbf{por subtipo}, no mezclando H3N2 y H1N1. Mezclar subtipos puede inflar artificialmente la correlacion, porque la distancia inter-subtipo domina la senal.
+
+La referencia clave es Hie, Yang y Kim \cite{hie2022evolutionary}, quienes muestran que los espacios latentes de modelos de lenguaje de proteinas pueden codificar direcciones evolutivas interpretables.
+
+\subsection{Resultados geometricos recientes}
+
+Con \texttt{max\_per\_subtype=10000}, muestreo \texttt{stratified\_by\_year}, \texttt{seed=42} y \texttt{pair\_samples=50000}, los resultados recientes muestran un contraste importante: la distancia temporal tiene correlacion debil con la distancia latente, mientras que las distancias de Hamming molecular presentan correlaciones fuertes.
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lcccc}
+\toprule
+Metrica comparada con distancia latente & H3N2 & H1N1 & Promedio & Interpretacion \\
+\midrule
+Distancia temporal & 0.1172 & 0.1700 & 0.1436 & Debil \\
+Hamming HA & 0.5522 & 0.7154 & 0.6338 & Fuerte \\
+Hamming HA+NA & 0.5820 & 0.7351 & 0.6586 & Fuerte \\
+\bottomrule
+\end{tabular}
+\caption{Correlaciones de Spearman por subtipo entre distancia latente y metricas temporales o moleculares.}
+\label{tab:spearman-geometria-reciente}
+\end{table}
+
+El resultado no prueba que una SDE funcione, pero si cambia favorablemente el diagnostico geometrico: la distancia temporal es debil, mientras que Hamming HA y HA+NA presentan correlacion fuerte con la distancia latente. Esto sugiere que AntigenLM captura estructura molecular relevante y fortalece la plausibilidad de usar su espacio latente como variable de estado.
+
+Como control preliminar de robustez, con \texttt{max\_per\_subtype=5000}, \texttt{seed=7}, \texttt{pair\_samples=30000} y metrica \texttt{hamming\_ha\_na}, se obtuvo $\rho=0.5348$ para H3N2, $\rho=0.6383$ para H1N1 y promedio $\rho=0.5866$, nuevamente en el rango fuerte.
+
+\subsection{Propiedad 3: dimension intrinseca finita}
+
+La tercera propiedad exige que los datos vivan en una variedad de dimension mucho menor que 384.
+
+\subsubsection*{Por que importa}
+
+Si los embeddings ocupan realmente las 384 dimensiones, la SDE tendria demasiados grados de libertad y su entrenamiento seria dificilmente tratable. En cambio, si los datos viven en una variedad de dimension aproximada entre 20 y 40, la SDE opera sobre un espacio manejable y la estimacion de sus parametros se vuelve factible.
+
+\subsubsection*{Como se prueba}
+
+Para evaluar si los embeddings de AntigenLM ocupan efectivamente las 384 dimensiones del espacio latente o se concentran cerca de una variedad de menor dimension, se emplearan estimadores locales de dimension intrinseca. En particular:
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{TwoNN}~\cite{facco2017intrinsic}: mide el cociente entre las distancias al primer y segundo vecino mas cercano.
+    \item \textbf{MLE}~\cite{levina2004mle}: estima la dimension mediante maxima verosimilitud a partir de distancias a $k$ vecinos.
+\end{itemize}
+
+La estimacion de dimension intrinseca sigue pendiente como criterio metodologico antes de afirmar que la SDE es computacionalmente viable en el espacio completo o en una proyeccion reducida.
+
+\subsection{Referencia adicional}
+
+Palma et al.~\cite{palma2025flatvi} muestran que los autoencoders estandar, sin regularizacion geometrica, pueden producir espacios latentes donde la interpolacion lineal no corresponde a geodesicas. Esta observacion es relevante porque AntigenLM no fue entrenado con una regularizacion geometrica explicita.
+
+% =========================================================
+\section{Resultados obtenidos hasta ahora}
+% =========================================================
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=2.2em]
+    \item \textbf{Tokenizador reconstruido:} se reconstruyo \texttt{InfluTokenizer}, de tipo \emph{character-level}, con vocabulario de 25 tokens. Fue verificado mediante pruebas automaticas y es consistente con el archivo \texttt{vocab.json} del repositorio original.
+
+    \item \textbf{Arquitectura reconstruida:} se reconstruyo \texttt{GPTForFluMultiTask}, basada en GPT-2 con 6 capas, 384 dimensiones, 6 cabezas de atencion y 13k posiciones. Incluye una cabeza de lenguaje para prediccion y una cabeza de clasificacion. Los pesos reales fueron cargados con cero claves faltantes.
+
+    \item \textbf{Datos procesados:} se cuenta con 111,756 cepas pareadas HA+NA de GISAID para el periodo 2000--2022. De ellas, 65,631 corresponden a H3N2, distribuidas en 242 meses y 239 ventanas temporales; y 46,125 corresponden a H1N1, distribuidas en 198 meses y 195 ventanas temporales. Ademas, se cuenta con 47,663 cepas de NCBI como respaldo.
+
+    \item \textbf{Analisis reciente de geometria del espacio latente:} la correlacion temporal previamente observada alrededor de $\rho \approx 0.13$ ya no debe interpretarse como diagnostico general del espacio latente. Los resultados actualizados muestran que la distancia temporal sigue siendo debil, pero Hamming HA y Hamming HA+NA presentan correlaciones fuertes con la distancia latente por subtipo (Tabla~\ref{tab:spearman-geometria-reciente}).
+\end{enumerate}
+
+Como prueba preliminar de robustez, una corrida independiente con \texttt{max\_per\_subtype=5000}, \texttt{seed=7}, \texttt{pair\_samples=30000} y metrica Hamming HA+NA produjo $\rho=0.5348$ para H3N2, $\rho=0.6383$ para H1N1 y promedio $\rho=0.5866$. Este resultado conserva la interpretacion fuerte, aunque aun se requieren mas semillas y tamanos de muestra para estimar estabilidad.
+
+Como analisis exploratorio adicional, las proyecciones UMAP preliminares sugieren agrupamientos por subtipo y año; sin embargo, estas visualizaciones se consideran evidencia descriptiva y no sustituyen las pruebas cuantitativas de preservacion metrica.
+
+La interpolacion lineal presenta un control preliminar de pasos uniformes, pero su interpretacion debe ser prudente: un coeficiente de variacion cercano a cero puede ser tautologico si se mide solamente la uniformidad de puntos construidos linealmente. La dimension intrinseca con TwoNN/MLE permanece pendiente y constituye un criterio necesario antes de decidir si la SDE debe operar en $\R^{384}$, en un subespacio PCA o en una proyeccion aprendida.
+
+\subsection{Pendientes metodologicos}
+
+Antes de afirmar que la SDE esta justificada o de ejecutar una evaluacion predictiva completa, quedan pendientes los siguientes puntos:
+
+\begin{itemize}[leftmargin=2em]
+    \item estimar dimension intrinseca mediante TwoNN y MLE;
+    \item evaluar robustez bajo multiples semillas, tamanos de muestra y estrategias de muestreo;
+    \item reemplazar la interpolacion tautologica por pruebas de suavidad no triviales;
+    \item definir una estrategia defendible de \emph{decoding} o, alternativamente, de \emph{scoring/ranking} por log-verosimilitud;
+    \item implementar baselines simples como persistencia, consenso y modelos autorregresivos en espacio latente;
+    \item congelar un protocolo de validacion prospectiva antes de usar los datos 2022--2026.
+\end{itemize}
+
+% =========================================================
+\section{Plan de trabajo revisado}
+% =========================================================
+
+El plan de trabajo se estructura en cinco fases distribuidas en seis meses. El orden se ajusta para que las afirmaciones sobre la SDE dependan de criterios geometricos y experimentales previos.
+
+\subsection*{Fase 1: auditoria geometrica y replica por scoring/ranking \texorpdfstring{(semanas 1--3)}{(semanas 1--3)}}
+
+\begin{itemize}[leftmargin=2em]
+    \item Consolidar la auditoria de Spearman por subtipo usando distancia temporal, Hamming HA y Hamming HA+NA.
+    \item Validar cache de embeddings, muestreo estratificado y reproducibilidad por semilla.
+    \item Reemplazar la generacion libre como replica principal por evaluacion de \emph{scoring/ranking} de cepas candidatas reales mediante log-verosimilitud condicional.
+    \item Comparar los resultados propios con las metricas reportadas en AntigenLM cuando la comparacion sea metodologicamente equivalente.
+    \item \textbf{Entregable:} reporte de auditoria geometrica y tabla de replica por scoring/ranking.
+\end{itemize}
+
+\subsection*{Fase 2: dimension intrinseca y robustez geometrica \texorpdfstring{(semanas 4--6)}{(semanas 4--6)}}
+
+\begin{itemize}[leftmargin=2em]
+    \item Implementar TwoNN y MLE con normalizacion y separacion por subtipo.
+    \item Realizar PCA complementario y evaluar varianza explicada.
+    \item Probar robustez de las correlaciones bajo distintas semillas, tamanos de muestra y politicas de muestreo.
+    \item Evaluar suavidad no tautologica: vecindad de datos reales, monotonicidad de Hamming e interpretacion de interpolaciones.
+    \item \textbf{Entregable:} criterios go/no-go para usar SDE directa, SDE proyectada o auditoria geometrica como contribucion central.
+\end{itemize}
+
+\subsection*{Fase 3: formulacion y entrenamiento SDE condicionado \texorpdfstring{(semanas 7--10)}{(semanas 7--10)}}
+
+\begin{itemize}[leftmargin=2em]
+    \item Definir criterios formales para proceder con una SDE directa o con una proyeccion previa.
+    \item Instalar y validar \texttt{torchsde}~\cite{li2020scalable}.
+    \item Definir $\Fviab$ y $\Fescape$ de forma operacional, incluyendo normalizacion de escalas.
+    \item Entrenar primero una ODE o drift simplificado antes de introducir difusion completa.
+    \item \textbf{Entregable:} modelo dinamico preliminar, solo si los criterios geometricos lo justifican.
+\end{itemize}
+
+\subsection*{Fase 4: evaluacion retrospectiva y prospectiva \texorpdfstring{(semanas 11--16)}{(semanas 11--16)}}
+
+\begin{itemize}[leftmargin=2em]
+    \item Realizar validacion retrospectiva: entrenar con datos anteriores a 2019 y evaluar en 2019--2022.
+    \item Realizar validacion prospectiva: entrenar con datos anteriores a 2022 y evaluar en 2022--2026, solo bajo protocolo previamente definido.
+    \item Comparar contra AntigenLM, persistencia, consenso, LBI y modelos simples en espacio latente~\cite{neher2014predicting}.
+    \item Realizar ablaciones: $\alpha=0$, $\beta=0$ y $\sigma=0$, si el modelo SDE se entrena.
+    \item Evaluar horizontes de 1, 3, 6 y 12 meses.
+    \item \textbf{Entregable:} tablas y figuras de comparacion, con resultados negativos reportados explicitamente si aparecen.
+\end{itemize}
+
+\subsection*{Fase 5: escritura \texorpdfstring{(semanas 17--24)}{(semanas 17--24)}}
+
+\begin{itemize}[leftmargin=2em]
+    \item Redactar el capitulo de metodologia: auditoria geometrica, scoring/ranking y SDE condicionada.
+    \item Redactar el capitulo de resultados: geometria, replica, evaluacion retrospectiva y, si procede, prospectiva.
+    \item Redactar conclusiones y trabajo futuro.
+    \item \textbf{Entregable:} tesis completa.
+\end{itemize}
+
+% =========================================================
+\section{Escenarios de resultado}
+% =========================================================
+
+\begin{escenario}{Escenario A: ideal}
+Si la SDE con paisaje competitivo funciona sobre el espacio latente de AntigenLM o sobre una proyeccion geometricamente validada, y supera al paper o a baselines simples en prediccion a horizontes mayores a un mes, entonces se alcanzaria el escenario ideal. Si la validacion prospectiva 2022--2026 confirma los resultados bajo protocolo predefinido, este escenario podria ser publicable en \emph{PLOS Computational Biology} o \emph{Bioinformatics}.
+\end{escenario}
+
+\begin{escenario}{Escenario B: realista}
+El espacio latente de AntigenLM preserva estructura molecular relevante, pero requiere una proyeccion o normalizacion adicional antes de entrenar una SDE estable. La contribucion seria doble: diagnostico geometrico y modelo dinamico sobre espacio corregido. Este escenario podria ser publicable en \emph{Bioinformatics} o en \emph{Journal of Computational Biology}.
+\end{escenario}
+
+\begin{escenario}{Escenario C: contribucion geometrica autocontenida}
+La SDE no funciona de forma estable, no mejora frente a baselines o la decodificacion directa no produce salidas validas. En este caso, la tesis no se presenta como fracaso, sino como una auditoria geometrica completa del espacio latente de AntigenLM, mostrando que preserva similitud molecular en Hamming HA/HA+NA pero dejando claras las condiciones adicionales que faltan para dinamicas continuas predictivas. Este escenario puede constituir una contribucion metodologica defendible y util para el diseno de futuros modelos de lenguaje viral.
+\end{escenario}
+
+% =========================================================
+\section{Ventaja competitiva unica}
+% =========================================================
+
+Una ventaja central del proyecto es contar con \textbf{datos prospectivos reales}. La mayoria de los trabajos de prediccion antigenica, incluido AntigenLM, evaluan retrospectivamente: entrenan con datos hasta cierto año y predicen años posteriores, pero esos datos ya existian al momento de diseñar el modelo.
+
+En este proyecto se podria realizar una validacion prospectiva genuina:
+
+\begin{itemize}[leftmargin=2em]
+    \item entrenar con datos hasta 2022;
+    \item predecir el periodo 2022--2026;
+    \item evaluar contra datos que no existian cuando el paper base fue escrito.
+\end{itemize}
+
+Esta validacion prospectiva aun no se ha ejecutado como resultado de tesis. Para que sea defendible, debe realizarse con un protocolo previamente definido: decisiones de muestreo, metricas, baselines, horizontes, criterios de inclusion y analisis estadistico deben congelarse antes de evaluar el periodo 2022--2026.
+
+% =========================================================
+\section{Referencias esenciales}
+% =========================================================
+
+Las siguientes referencias estan organizadas en orden sugerido de lectura.
+
+\begin{thebibliography}{99}
+
+\bibitem{pei2026antigenlm}
+Y. Pei, X. Chi, and Y. Kang.
+\newblock AntigenLM: Structure-Aware DNA Language Modeling for Influenza.
+\newblock \emph{International Conference on Learning Representations}, 2026.
+
+\bibitem{arvanitidis2018latent}
+G. Arvanitidis, L. K. Hansen, and S. Hauberg.
+\newblock Latent Space Oddity: on the Curvature of Deep Generative Models.
+\newblock \emph{International Conference on Learning Representations}, 2018.
+
+\bibitem{hie2022evolutionary}
+B. L. Hie, K. K. Yang, and P. S. Kim.
+\newblock Evolutionary velocity with protein language models predicts evolutionary dynamics of diverse proteins.
+\newblock \emph{Cell Systems}, 13(4):274--285.e6, 2022.
+
+\bibitem{kidger2021neural}
+P. Kidger, J. Foster, X. Li, and T. Lyons.
+\newblock Efficient and Accurate Gradients for Neural SDEs.
+\newblock \emph{Advances in Neural Information Processing Systems}, 2021.
+
+\bibitem{li2020scalable}
+X. Li, T.-K. L. Wong, R. T. Q. Chen, and D. Duvenaud.
+\newblock Scalable Gradients for Stochastic Differential Equations.
+\newblock \emph{Proceedings of the 23rd International Conference on Artificial Intelligence and Statistics}, PMLR 108:3870--3882, 2020.
+
+\bibitem{facco2017intrinsic}
+E. Facco, M. d'Errico, A. Rodriguez, and A. Laio.
+\newblock Estimating the intrinsic dimension of datasets by a minimal neighborhood information.
+\newblock \emph{Scientific Reports}, 7:12140, 2017.
+
+\bibitem{levina2004mle}
+E. Levina and P. J. Bickel.
+\newblock Maximum likelihood estimation of intrinsic dimension.
+\newblock \emph{Advances in Neural Information Processing Systems 17}, 2004.
+
+\bibitem{luksza2014fitness}
+M. \L{}uksza and M. L\"assig.
+\newblock A predictive fitness model for influenza.
+\newblock \emph{Nature}, 507:57--61, 2014.
+
+\bibitem{neher2014predicting}
+R. A. Neher, C. A. Russell, and B. I. Shraiman.
+\newblock Predicting evolution from the shape of genealogical trees.
+\newblock \emph{eLife}, 3:e03568, 2014.
+
+\bibitem{yeo2021prescient}
+G. H. T. Yeo, S. D. Saksena, and D. K. Gifford.
+\newblock Generative modeling of single-cell time series with PRESCIENT enables prediction of cell trajectories with interventions.
+\newblock \emph{Nature Communications}, 12:3222, 2021.
+
+\bibitem{palma2025flatvi}
+A. Palma, S. Rybakov, L. Hetzel, S. G\"unnemann, and F. J. Theis.
+\newblock Enforcing Latent Euclidean Geometry in Single-Cell VAEs for Manifold Interpolation.
+\newblock \emph{Proceedings of the 42nd International Conference on Machine Learning}, PMLR 267:47478--47508, 2025.
+
+\end{thebibliography}
+
+\end{document}

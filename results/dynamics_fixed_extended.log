@@ -1,0 +1,27 @@
+Cache cargado: embeddings=(111756, 384) records=111756
+Metadata: sampling=all seed=42 max_per_subtype=-1
+
+Resultados rolling-origin:
+  d=3 H1N1 persistence: n=48 RMSE=0.9206 MAE=0.5424 dist=1.3560 ratio=1.0000 impr=0.0000 NLL=NA
+  d=3 H1N1 constant_velocity: n=48 RMSE=1.4536 MAE=0.8102 dist=2.0077 ratio=1.5790 impr=-0.5790 NLL=NA
+  d=3 H1N1 ridge_var1: n=48 RMSE=1.0919 MAE=0.7491 dist=1.6688 ratio=1.1861 impr=-0.1861 NLL=NA
+  d=3 H1N1 ridge_var2: n=48 RMSE=1.0165 MAE=0.6758 dist=1.5430 ratio=1.1041 impr=-0.1041 NLL=NA
+  d=3 H1N1 gaussian_rw_mean: n=48 RMSE=0.9241 MAE=0.5435 dist=1.3622 ratio=1.0038 impr=-0.0038 NLL=3.6922
+  d=3 H3N2 persistence: n=48 RMSE=0.8470 MAE=0.5709 dist=1.2436 ratio=1.0000 impr=0.0000 NLL=NA
+  d=3 H3N2 constant_velocity: n=48 RMSE=1.2066 MAE=0.7891 dist=1.7544 ratio=1.4245 impr=-0.4245 NLL=NA
+  d=3 H3N2 ridge_var1: n=48 RMSE=1.0775 MAE=0.8222 dist=1.7192 ratio=1.2720 impr=-0.2720 NLL=NA
+  d=3 H3N2 ridge_var2: n=48 RMSE=1.0001 MAE=0.7504 dist=1.5726 ratio=1.1807 impr=-0.1807 NLL=NA
+  d=3 H3N2 gaussian_rw_mean: n=48 RMSE=0.8495 MAE=0.5737 dist=1.2511 ratio=1.0029 impr=-0.0029 NLL=3.9221
+
+Figuras generadas:
+  figures/gisaid/pca_rolling_rmse_by_model.png
+  figures/gisaid/pca_rolling_rmse_by_model.pdf
+  figures/gisaid/pca_rolling_relative_improvement.png
+  figures/gisaid/pca_rolling_relative_improvement.pdf
+  figures/gisaid/pca_rolling_predictions_h1n1_d3.png
+  figures/gisaid/pca_rolling_predictions_h1n1_d3.pdf
+  figures/gisaid/pca_rolling_predictions_h3n2_d3.png
+  figures/gisaid/pca_rolling_predictions_h3n2_d3.pdf
+
+Resumen guardado: results/pca_rolling_dynamics_summary.md
+Advertencia: rolling-origin en PCA space; no es una SDE ni genera secuencias.

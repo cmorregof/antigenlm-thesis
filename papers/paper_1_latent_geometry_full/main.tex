@@ -1,0 +1,243 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+
+\title{Geometric Structure of AntigenLM Latent Representations for Influenza A Evolution}
+\author{Carlos Morrego \and Thesis checkpoint draft}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We audit the geometry of local AntigenLM latent representations for Influenza A using HA/NA sequence records from H1N1 and H3N2. Each record is represented as
+\[
+z_i = Enc_\theta(HA_i, NA_i) \in \mathbb{R}^{384}.
+\]
+The analysis evaluates whether latent Euclidean distances preserve molecular similarity, whether global and local temporal structure are present, and whether the embedding cloud has low effective dimension. Pairwise molecular and temporal correlations are estimated by stratified random sampling of pairs within subtype, avoiding the infeasible quadratic comparison over all records. PCA and TwoNN are used as complementary linear and local intrinsic-dimension diagnostics, and nearest-neighbor temporal differences are compared against subtype-matched random baselines. This work does not generate sequences, optimize mutations, make vaccine recommendations, or reproduce AntigenLM forecasting figures. The results support using the local AntigenLM embedding space as a candidate state space for future probabilistic models, while leaving forecasting validation for subsequent work.
+\end{abstract}
+
+\section{Introduction}
+Influenza A evolves through the accumulation and selection of mutations in surface proteins, especially hemagglutinin (HA) and neuraminidase (NA). Sequence language models may provide compact representations of this evolutionary variation, but a latent space should not be used as a dynamical state variable without first auditing its geometry. This checkpoint asks whether local AntigenLM embeddings preserve molecular similarity, contain interpretable temporal organization, and exhibit low effective dimension.
+
+\section{Background}
+AntigenLM is used here as a released local checkpoint and embedding function, not as a fully reproduced forecasting pipeline \cite{pei2026antigenlm}. For two records $i,j$, latent distance is
+\[
+d_Z(i,j)=\|z_i-z_j\|_2.
+\]
+Temporal distance is
+\[
+d_T(i,j)=|12(y_i-y_j)+(m_i-m_j)|,
+\]
+and normalized Hamming distance is
+\[
+d_H(x,y)=\frac{1}{L}\sum_{\ell=1}^L \mathbf{1}\{x_\ell\neq y_\ell\}.
+\]
+We estimate rank correlation using Spearman's $\rho$ \cite{spearman1904}.
+
+PCA effective dimension is summarized by $n_{80}, n_{90}, n_{95}, n_{99}$ and by the participation ratio
+\[
+PR=\frac{(\sum_i \lambda_i)^2}{\sum_i \lambda_i^2}.
+\]
+TwoNN estimates local intrinsic dimension using
+\[
+\mu_i=\frac{r_{2,i}}{r_{1,i}},\qquad
+-\log(1-F_i)=d\log(\mu_i),
+\]
+where $r_1$ and $r_2$ are first and second nearest-neighbor distances \cite{facco2017intrinsic}.
+
+\section{Methods}
+\subsection{Data and embeddings}
+The processed local dataset contains 111,756 cached embeddings of dimension 384. The cache includes 46,125 H1N1 and 65,631 H3N2 records. Complete sequences are not printed or redistributed; outputs contain only aggregate counts, metrics, tables, and figures.
+
+\subsection{Pair sampling}
+All valid records are used for embedding extraction and global PCA-style analyses. Pairwise correlations are estimated by random pair sampling within subtype because all pairwise comparisons would scale quadratically. Multiple random seeds are used to assess sampling sensitivity.
+
+\subsection{Deduplication}
+TwoNN and local temporal-neighborhood analyses are performed after exact HA+NA deduplication, retaining the first representative of each exact sequence pair.
+
+\section{Results}
+\subsection{Data audit}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{figures/records_by_year_subtype.pdf}
+\caption{Processed records by year and subtype.}
+\label{fig:data-year}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/sequence_length_distributions.pdf}
+\caption{HA and NA sequence-length distributions by subtype.}
+\label{fig:lengths}
+\end{figure}
+
+\subsection{Latent distance preserves molecular similarity}
+Table~\ref{tab:spearman} summarizes pair-sampled Spearman correlations. The main methodological comparison is between temporal distance and molecular Hamming distances.
+
+\begin{table}[H]
+\centering
+\caption{Pair-sampled Spearman correlations between latent Euclidean distance and temporal or molecular distances. Values are summarized across random seeds.}
+\label{tab:spearman}
+\begin{tabular}{llrrr}
+\toprule
+Metric & Subtype & $\rho$ mean & $\rho$ sd & valid pairs \\
+\midrule
+Temporal distance & H1N1 & 0.1059 & 0.0019 & 100000 \\
+Temporal distance & H3N2 & 0.1249 & 0.0053 & 100000 \\
+HA Hamming & H1N1 & 0.8940 & 0.0005 & 99956 \\
+HA Hamming & H3N2 & 0.6512 & 0.0029 & 99996 \\
+HA+NA Hamming & H1N1 & 0.8802 & 0.0008 & 99948 \\
+HA+NA Hamming & H3N2 & 0.6600 & 0.0029 & 99771 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/spearman_latent_vs_distances.pdf}
+\caption{Spearman correlation summary for latent distance versus temporal and molecular distances.}
+\label{fig:spearman}
+\end{figure}
+
+\subsection{Effective dimension by PCA}
+PCA is used as a linear effective-dimension diagnostic \cite{jolliffe2002pca,jolliffe2016pca}.
+
+\begin{table}[H]
+\centering
+\caption{PCA effective dimension of AntigenLM embeddings. $n_q$ denotes the number of principal components required to explain fraction $q$ of variance.}
+\label{tab:pca}
+\begin{tabular}{lrrrrrr}
+\toprule
+Group & n & $n_{80}$ & $n_{90}$ & $n_{95}$ & $n_{99}$ & PR \\
+\midrule
+global & 111,756 & 3 & 4 & 5 & 12 & 3.32 \\
+H1N1 & 46,125 & 1 & 2 & 4 & 8 & 1.39 \\
+H3N2 & 65,631 & 2 & 3 & 4 & 10 & 1.80 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_scree_global.pdf}
+\caption{Global scree plot.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_cumulative_global.pdf}
+\caption{Global cumulative variance.}
+\end{subfigure}
+\caption{Global PCA spectrum.}
+\label{fig:pca-spectrum}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_2d_by_subtype.pdf}
+\caption{Colored by subtype.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_2d_by_year.pdf}
+\caption{Colored by year.}
+\end{subfigure}
+\caption{Two-dimensional global PCA projection.}
+\label{fig:pca-2d}
+\end{figure}
+
+\subsection{TwoNN intrinsic-dimension sensitivity}
+TwoNN provides a local, non-PCA intrinsic-dimension diagnostic. It should be interpreted as a range rather than a single absolute truth.
+
+\begin{table}[H]
+\centering
+\caption{TwoNN intrinsic-dimension sensitivity after exact HA+NA deduplication.}
+\label{tab:twonn}
+\begin{tabular}{rrrr}
+\toprule
+Sample size & trim & dimension mean & $R^2$ mean \\
+\midrule
+5,000 & 0.01 & 2.08 & 0.953 \\
+5,000 & 0.05 & 3.05 & 0.965 \\
+10,000 & 0.01 & 2.05 & 0.952 \\
+10,000 & 0.05 & 3.05 & 0.964 \\
+20,000 & 0.01 & 2.08 & 0.952 \\
+20,000 & 0.05 & 3.07 & 0.962 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/twonn_sensitivity.pdf}
+\caption{Sensitivity.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/twonn_fit_example.pdf}
+\caption{Example fit.}
+\end{subfigure}
+\caption{TwoNN intrinsic-dimension diagnostics.}
+\label{fig:twonn}
+\end{figure}
+
+\subsection{Temporal distance is weak globally but strong locally}
+Local temporal structure is evaluated by comparing latent nearest-neighbor time differences against random subtype-matched pairs.
+
+\begin{table}[H]
+\centering
+\caption{Local temporal coherence of latent nearest neighbors after exact HA+NA deduplication.}
+\label{tab:temporal-local}
+\begin{tabular}{lrrrr}
+\toprule
+Subtype & k & median NN months & median random months & ratio \\
+\midrule
+H1N1 & 5 & 2.00 & 43.00 & 0.047 \\
+H1N1 & 10 & 2.00 & 42.00 & 0.048 \\
+H1N1 & 20 & 2.00 & 42.00 & 0.048 \\
+H3N2 & 5 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 10 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 20 & 2.00 & 35.00 & 0.057 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/temporal_local_neighbors_h1n1_dedup.pdf}
+\caption{H1N1.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/temporal_local_neighbors_h3n2_dedup.pdf}
+\caption{H3N2.}
+\end{subfigure}
+\caption{Temporal differences of latent nearest neighbors versus random baselines after exact HA+NA deduplication.}
+\label{fig:temporal-local}
+\end{figure}
+
+\section{Discussion}
+The audit separates three claims. First, molecular organization is assessed by Hamming correlations, which test whether nearby points in latent space tend to have similar HA/NA sequences. Second, global temporal correlation asks whether latent distance behaves like a simple chronological axis; weak global temporal correlation is not necessarily problematic because influenza evolution is branching and nonlinear. Third, temporal locality asks whether latent neighborhoods are temporally coherent, which is more relevant for local dynamical modeling.
+
+Low PCA effective dimension and stable TwoNN ranges motivate reduced probabilistic dynamics in latent or PCA space. However, these geometric findings do not prove forecasting performance, do not validate a full stochastic differential equation, and do not establish vaccine-strain prediction.
+
+\section{Limitations}
+This checkpoint is not a reproduction of AntigenLM forecasting figures. It does not generate or decode sequences, does not evaluate prospective 2022--2026 forecasting, and does not compare against an official AntigenLM inference protocol. Hamming distance is a molecular proxy, not an experimental antigenic distance. Pairwise correlations are estimated by sampled pairs rather than complete all-pairs computation.
+
+\section{Conclusion}
+The local AntigenLM latent space exhibits molecular organization, low effective dimension, and coherent local temporal neighborhoods. These results support its use as a candidate state space for future probabilistic models of influenza evolution, but they do not by themselves validate a full predictive SDE or vaccine-strain forecasting model.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

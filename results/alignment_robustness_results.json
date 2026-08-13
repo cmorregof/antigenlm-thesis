@@ -1,0 +1,473 @@
+{
+  "created_at": "2026-05-14 06:04:22 -05",
+  "runtime_seconds": 30.1120707988739,
+  "inputs": {
+    "cache_path": "results/embeddings_cache_full_all_available.pkl"
+  },
+  "cache_metadata": {
+    "sampling_strategy": "all",
+    "seed": 42,
+    "max_per_subtype": -1,
+    "max_seq_length": 4000,
+    "embedding_batch_size": 4,
+    "created_at_utc": "2026-05-05T09:40:15Z",
+    "checkpoint": {
+      "path": "prediction_sequence/pytorch_model.bin",
+      "exists": true,
+      "size_bytes": 1076663612,
+      "mtime": 1776879300.0,
+      "sha256": "6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff"
+    }
+  },
+  "parameters": {
+    "pairs_per_subtype": 250,
+    "seeds": [
+      42,
+      7,
+      123
+    ],
+    "aligner": {
+      "library": "Biopython PairwiseAligner",
+      "mode": "global",
+      "match_score": 1.0,
+      "mismatch_score": 0.0,
+      "open_gap_score": -2.0,
+      "extend_gap_score": -0.5
+    }
+  },
+  "deduplication": {
+    "deduplicated_n": 82306,
+    "removed_duplicates": {
+      "H3N2": 20078,
+      "H1N1": 9372
+    }
+  },
+  "rows": [
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA",
+      "subtype": "H1N1",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.8210779733787478
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "NA",
+      "subtype": "H1N1",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.7610917238384579
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA+NA",
+      "subtype": "H1N1",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.8335723203856678
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA",
+      "subtype": "H1N1",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.604566733414291
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "NA",
+      "subtype": "H1N1",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.3988875118534906
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA+NA",
+      "subtype": "H1N1",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5352609235806703
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA",
+      "subtype": "H1N1",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.7851399852653105
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "NA",
+      "subtype": "H1N1",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.7427396519841457
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA+NA",
+      "subtype": "H1N1",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.8140277029219424
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA",
+      "subtype": "H1N1",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6569293789731038
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "NA",
+      "subtype": "H1N1",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5065525931151065
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA+NA",
+      "subtype": "H1N1",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6161618159241843
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA",
+      "subtype": "H1N1",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.8545740355385101
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "NA",
+      "subtype": "H1N1",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.7893841657669296
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA+NA",
+      "subtype": "H1N1",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.8632259073975388
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA",
+      "subtype": "H1N1",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6689096832500451
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "NA",
+      "subtype": "H1N1",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.48626922857389343
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA+NA",
+      "subtype": "H1N1",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6094093206161486
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA",
+      "subtype": "H3N2",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5085232470407753
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "NA",
+      "subtype": "H3N2",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.4644469192893097
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA+NA",
+      "subtype": "H3N2",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5584749083013099
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA",
+      "subtype": "H3N2",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5521090805372513
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "NA",
+      "subtype": "H3N2",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5366563617636543
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA+NA",
+      "subtype": "H3N2",
+      "seed": 42,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5849287877646003
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA",
+      "subtype": "H3N2",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.55552957422491
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "NA",
+      "subtype": "H3N2",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 249,
+      "rho": 0.5485772229627356
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA+NA",
+      "subtype": "H3N2",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 249,
+      "rho": 0.6399074961602488
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA",
+      "subtype": "H3N2",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6026735810835181
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "NA",
+      "subtype": "H3N2",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5875982815285666
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA+NA",
+      "subtype": "H3N2",
+      "seed": 7,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6302642712606651
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA",
+      "subtype": "H3N2",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6500612031069185
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "NA",
+      "subtype": "H3N2",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 249,
+      "rho": 0.5661775883217954
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA+NA",
+      "subtype": "H3N2",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 249,
+      "rho": 0.6831787005459999
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA",
+      "subtype": "H3N2",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6232867389969718
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "NA",
+      "subtype": "H3N2",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.5695118851160705
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA+NA",
+      "subtype": "H3N2",
+      "seed": 123,
+      "requested_pairs": 250,
+      "valid_pairs": 250,
+      "rho": 0.6324306348659892
+    }
+  ],
+  "aggregate": [
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA",
+      "subtype": "H1N1",
+      "rho_mean": 0.8202639980608563,
+      "rho_sd": 0.03472418107312115,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA",
+      "subtype": "H3N2",
+      "rho_mean": 0.5713713414575347,
+      "rho_sd": 0.0720865413488181,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "NA",
+      "subtype": "H1N1",
+      "rho_mean": 0.7644051805298444,
+      "rho_sd": 0.02349812573254194,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "NA",
+      "subtype": "H3N2",
+      "rho_mean": 0.526400576857947,
+      "rho_sd": 0.05437035019008124,
+      "valid_pairs_mean": 249.33333333333334
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA+NA",
+      "subtype": "H1N1",
+      "rho_mean": 0.8369419769017163,
+      "rho_sd": 0.02477159198926787,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "prefix",
+      "segment": "HA+NA",
+      "subtype": "H3N2",
+      "rho_mean": 0.6271870350025195,
+      "rho_sd": 0.06331758483313052,
+      "valid_pairs_mean": 249.33333333333334
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA",
+      "subtype": "H1N1",
+      "rho_mean": 0.6434685985458133,
+      "rho_sd": 0.03421839060615484,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA",
+      "subtype": "H3N2",
+      "rho_mean": 0.5926898002059137,
+      "rho_sd": 0.036624058710240895,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "NA",
+      "subtype": "H1N1",
+      "rho_mean": 0.4639031111808302,
+      "rho_sd": 0.05721122998326294,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "NA",
+      "subtype": "H3N2",
+      "rho_mean": 0.5645888428027638,
+      "rho_sd": 0.02582531813061842,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA+NA",
+      "subtype": "H1N1",
+      "rho_mean": 0.5869440200403344,
+      "rho_sd": 0.044886032270244895,
+      "valid_pairs_mean": 250.0
+    },
+    {
+      "distance_proxy": "aligned",
+      "segment": "HA+NA",
+      "subtype": "H3N2",
+      "rho_mean": 0.6158745646304181,
+      "rho_sd": 0.02682170971786398,
+      "valid_pairs_mean": 250.0
+    }
+  ],
+  "limitations": [
+    "This is a small pairwise global-alignment subsample, not a full MSA.",
+    "It does not curate HA/NA protein reading frames, antigenic sites, insertions, deletions, or subtype-specific numbering."
+  ]
+}

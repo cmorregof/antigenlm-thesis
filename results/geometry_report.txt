@@ -12,11 +12,11 @@ EXPERIMENTO 2: CORRELACION DE SPEARMAN (por subtipo)
   Interpretacion: temporal debil pero significativa
 
 EXPERIMENTO 3: INTERPOLACION LINEAL
-  CV promedio = 0.000001
+  CV promedio = 0.000000
   Interpretacion: euclidiano local
 
 EXPERIMENTO 4: DIMENSION INTRINSECA
-  Estimacion: 3.3 dims efectivas (de 384)
+  No ejecutado
 
 CONCLUSION:
   La evidencia empirica APOYA el supuesto de regularidad

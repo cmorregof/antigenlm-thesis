@@ -1,0 +1,129 @@
+\begin{thebibliography}{10}
+
+\bibitem{bedford2014integrating}
+Trevor Bedford, Marc~A. Suchard, Philippe Lemey, Gytis Dudas, Victoria Gregory,
+  Alan~J. Hay, John~W. McCauley, Colin~A. Russell, Derek~J. Smith, and Andrew
+  Rambaut.
+\newblock Integrating influenza antigenic dynamics with molecular evolution.
+\newblock {\em eLife}, 3:e01914, 2014.
+
+\bibitem{ceruti2014danco}
+Claudio Ceruti, Simone Bassis, Alessandro Rozza, Gabriele Lombardi, Elena
+  Casiraghi, and Paola Campadelli.
+\newblock {DANCo}: An intrinsic dimensionality estimator exploiting angle and
+  norm concentration.
+\newblock {\em Pattern Recognition}, 47(8):2569--2581, 2014.
+
+\bibitem{dallatorre2025nucleotide}
+Hugo Dalla-Torre, Liam Gonzalez, Javier Mendoza-Revilla, Nicolas
+  Lopez~Carranza, Adam~Henryk Grzywaczewski, Francesco Oteri, Christian
+  Dallago, Evan Trop, Bernardo~P. de~Almeida, Hassan Sirelkhatim, Guillaume
+  Richard, Marcin Skwark, Karim Beguir, Marie Lopez, and Thomas Pierrot.
+\newblock Nucleotide transformer: Building and evaluating robust foundation
+  models for human genomics.
+\newblock {\em Nature Methods}, 22:287--297, 2025.
+
+\bibitem{facco2017intrinsic}
+Elena Facco, Maria d'Errico, Alex Rodriguez, and Alessandro Laio.
+\newblock Estimating the intrinsic dimension of datasets by a minimal
+  neighborhood information.
+\newblock {\em Scientific Reports}, 7:12140, 2017.
+
+\bibitem{hie2021viral}
+Brian Hie, Ellen~D. Zhong, Bonnie Berger, and Bryan Bryson.
+\newblock Learning the language of viral evolution and escape.
+\newblock {\em Science}, 371(6526):284--288, 2021.
+
+\bibitem{ji2021dnabert}
+Yanrong Ji, Zhihan Zhou, Han Liu, and Ramana~V. Davuluri.
+\newblock {DNABERT}: Pre-trained bidirectional encoder representations from
+  transformers model for {DNA}-language in genome.
+\newblock {\em Bioinformatics}, 37(15):2112--2120, 2021.
+
+\bibitem{jolliffe2002pca}
+I.~T. Jolliffe.
+\newblock {\em Principal Component Analysis}.
+\newblock Springer, 2 edition, 2002.
+
+\bibitem{jolliffe2016pca}
+Ian~T. Jolliffe and Jorge Cadima.
+\newblock Principal component analysis: A review and recent developments.
+\newblock {\em Philosophical Transactions of the Royal Society A},
+  374(2065):20150202, 2016.
+
+\bibitem{koel2013substitutions}
+Bjorn~F. Koel, David~F. Burke, Theo~M. Bestebroer, Stefan van~der Vliet, Gerben
+  Zondag, Gaby Vervaet, Eugene Skepner, Nicola~S. Lewis, Monique~I. Spronken,
+  Colin~A. Russell, Mikhail~Y. Eropkin, Aeron~C. Hurt, Ian~G. Barr, Jan~C.
+  de~Jong, Guus~F. Rimmelzwaan, Albert D. M.~E. Osterhaus, Ron A.~M. Fouchier,
+  and Derek~J. Smith.
+\newblock Substitutions near the receptor binding site determine major
+  antigenic change during influenza virus evolution.
+\newblock {\em Science}, 342(6161):976--979, 2013.
+
+\bibitem{lee2009quality}
+John~A. Lee and Michel Verleysen.
+\newblock Quality assessment of dimensionality reduction: Rank-based criteria.
+\newblock {\em Neurocomputing}, 72(7--9):1431--1443, 2009.
+
+\bibitem{levina2005maximum}
+Elizaveta Levina and Peter~J. Bickel.
+\newblock Maximum likelihood estimation of intrinsic dimension.
+\newblock In {\em Advances in Neural Information Processing Systems 17}, pages
+  777--784, 2005.
+
+\bibitem{luksza2014fitness}
+Marta {\L}uksza and Michael L{\"a}ssig.
+\newblock A predictive fitness model for influenza.
+\newblock {\em Nature}, 507:57--61, 2014.
+
+\bibitem{neher2014predicting}
+Richard~A. Neher, Colin~A. Russell, and Boris~I. Shraiman.
+\newblock Predicting evolution from the shape of genealogical trees.
+\newblock {\em eLife}, 3:e03568, 2014.
+
+\bibitem{nguyen2023hyenadna}
+Eric Nguyen, Michael Poli, Matthew~G. Durrant, Armin~W. Thomas, Brian Kang,
+  Jeremy Sullivan, Madelena~Y. Ng, Ashley Lewis, Aman Patel, Aaron Lou, Stefano
+  Ermon, Stephen~A. Baccus, Tina Hernandez-Boussard, and Christopher R{\'e}.
+\newblock {HyenaDNA}: Long-range genomic sequence modeling at single nucleotide
+  resolution.
+\newblock In {\em Advances in Neural Information Processing Systems}, 2023.
+
+\bibitem{pei2026antigenlm}
+Yue Pei, Xuebin Chi, and Yu~Kang.
+\newblock {AntigenLM}: Structure-aware {DNA} language modeling for influenza.
+\newblock In {\em International Conference on Learning Representations}, 2026.
+\newblock Accepted by ICLR 2026.
+
+\bibitem{rives2021biological}
+Alexander Rives, Joshua Meier, Tom Sercu, Siddharth Goyal, Zeming Lin, Jason
+  Liu, Demi Guo, Myle Ott, C.~Lawrence Zitnick, Jerry Ma, and Rob Fergus.
+\newblock Biological structure and function emerge from scaling unsupervised
+  learning to 250 million protein sequences.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  118(15):e2016239118, 2021.
+
+\bibitem{shu2017gisaid}
+Yuelong Shu and John McCauley.
+\newblock {GISAID}: Global initiative on sharing all influenza data -- from
+  vision to reality.
+\newblock {\em Euro Surveillance}, 22(13):30494, 2017.
+
+\bibitem{smith2004mapping}
+Derek~J. Smith, Alan~S. Lapedes, Jan~C. de~Jong, Theo~M. Bestebroer, Guus~F.
+  Rimmelzwaan, Albert D. M.~E. Osterhaus, and Ron A.~M. Fouchier.
+\newblock Mapping the antigenic and genetic evolution of influenza virus.
+\newblock {\em Science}, 305(5682):371--376, 2004.
+
+\bibitem{spearman1904}
+Charles Spearman.
+\newblock The proof and measurement of association between two things.
+\newblock {\em The American Journal of Psychology}, 15(1):72--101, 1904.
+
+\bibitem{szekely2007distance}
+G{\'a}bor~J. Sz{\'e}kely, Maria~L. Rizzo, and Nail~K. Bakirov.
+\newblock Measuring and testing dependence by correlation of distances.
+\newblock {\em The Annals of Statistics}, 35(6):2769--2794, 2007.
+
+\end{thebibliography}

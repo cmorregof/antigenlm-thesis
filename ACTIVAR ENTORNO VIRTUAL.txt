@@ -1,2 +1,0 @@
-python -m venv venv_antigenlm
-.\venv_antigenlm\Scripts\Activate.ps1

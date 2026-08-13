@@ -1,0 +1,447 @@
+{
+  "created_at": "2026-05-14 06:02:28 -05",
+  "runtime_seconds": 5.431241989135742,
+  "inputs": {
+    "cache_path": "results/embeddings_cache_full_all_available.pkl"
+  },
+  "cache_metadata": {
+    "sampling_strategy": "all",
+    "seed": 42,
+    "max_per_subtype": -1,
+    "max_seq_length": 4000,
+    "embedding_batch_size": 4,
+    "created_at_utc": "2026-05-05T09:40:15Z",
+    "checkpoint": {
+      "path": "prediction_sequence/pytorch_model.bin",
+      "exists": true,
+      "size_bytes": 1076663612,
+      "mtime": 1776879300.0,
+      "sha256": "6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff"
+    }
+  },
+  "parameters": {
+    "pair_samples_per_subtype": 100000,
+    "pair_seeds": [
+      42,
+      7,
+      123
+    ]
+  },
+  "pca": {
+    "original": {
+      "n_samples": 111756,
+      "embedding_dim": 384,
+      "n_components_by_threshold": {
+        "0.8": 2,
+        "0.9": 2,
+        "0.95": 3,
+        "0.99": 10
+      },
+      "participation_ratio": 1.910691053477228,
+      "top10_explained_variance_ratio": [
+        0.6892779220944777,
+        0.21279099666433648,
+        0.051748234812545466,
+        0.013535580381726864,
+        0.008092421174739961,
+        0.005796890862041721,
+        0.0028100840336708834,
+        0.0027095870667755723,
+        0.002131085987333292,
+        0.001564268536547988
+      ]
+    },
+    "l2_normalized": {
+      "n_samples": 111756,
+      "embedding_dim": 384,
+      "n_components_by_threshold": {
+        "0.8": 2,
+        "0.9": 2,
+        "0.95": 3,
+        "0.99": 10
+      },
+      "participation_ratio": 1.805306454160846,
+      "top10_explained_variance_ratio": [
+        0.7198084727430263,
+        0.18100188529681133,
+        0.05229209826845701,
+        0.012705837229700255,
+        0.008486041000827801,
+        0.0063451432493251865,
+        0.002981245617144485,
+        0.002878302625929139,
+        0.0020367232136607205,
+        0.00163463728216939
+      ]
+    },
+    "deduplicated_original": {
+      "n_samples": 82306,
+      "embedding_dim": 384,
+      "n_components_by_threshold": {
+        "0.8": 2,
+        "0.9": 2,
+        "0.95": 3,
+        "0.99": 11
+      },
+      "participation_ratio": 1.9295772329245984,
+      "top10_explained_variance_ratio": [
+        0.6835156483395831,
+        0.22002112245642005,
+        0.048209045221620464,
+        0.013531965680763404,
+        0.0085451798293163,
+        0.005961398463559052,
+        0.0030197750423413476,
+        0.0026757489054867866,
+        0.0023314385742585525,
+        0.0016045050894498963
+      ]
+    },
+    "deduplicated_l2_normalized": {
+      "n_samples": 82306,
+      "embedding_dim": 384,
+      "n_components_by_threshold": {
+        "0.8": 2,
+        "0.9": 2,
+        "0.95": 3,
+        "0.99": 11
+      },
+      "participation_ratio": 1.8222157442738505,
+      "top10_explained_variance_ratio": [
+        0.7149553688070668,
+        0.1867959248602876,
+        0.04907815721381028,
+        0.013000246180449093,
+        0.008786894966674466,
+        0.0064880906533694785,
+        0.003214995842482892,
+        0.0028433501726173546,
+        0.0022182245895841827,
+        0.001675136960276467
+      ]
+    },
+    "deduplication": {
+      "deduplicated_n": 82306,
+      "removed_duplicates": {
+        "H3N2": 20078,
+        "H1N1": 9372
+      }
+    }
+  },
+  "correlations": {
+    "rows": [
+      {
+        "representation": "original",
+        "subtype": "H1N1",
+        "seed": 42,
+        "rho": 0.8535381703259707,
+        "valid_pairs": 99949,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "l2_normalized",
+        "subtype": "H1N1",
+        "seed": 42,
+        "rho": 0.8391821716997003,
+        "valid_pairs": 99949,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1",
+        "subtype": "H1N1",
+        "seed": 42,
+        "rho": 0.9095626936902358,
+        "valid_pairs": 99949,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2",
+        "subtype": "H1N1",
+        "seed": 42,
+        "rho": 0.40446077816722475,
+        "valid_pairs": 99949,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2_PC3",
+        "subtype": "H1N1",
+        "seed": 42,
+        "rho": 0.2663932567108502,
+        "valid_pairs": 99949,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "original",
+        "subtype": "H1N1",
+        "seed": 7,
+        "rho": 0.8525927328284053,
+        "valid_pairs": 99956,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "l2_normalized",
+        "subtype": "H1N1",
+        "seed": 7,
+        "rho": 0.8376903217765415,
+        "valid_pairs": 99956,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1",
+        "subtype": "H1N1",
+        "seed": 7,
+        "rho": 0.9093042291182678,
+        "valid_pairs": 99956,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2",
+        "subtype": "H1N1",
+        "seed": 7,
+        "rho": 0.4085862202572338,
+        "valid_pairs": 99956,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2_PC3",
+        "subtype": "H1N1",
+        "seed": 7,
+        "rho": 0.2694868162014362,
+        "valid_pairs": 99956,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "original",
+        "subtype": "H1N1",
+        "seed": 123,
+        "rho": 0.8538526443909218,
+        "valid_pairs": 99938,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "l2_normalized",
+        "subtype": "H1N1",
+        "seed": 123,
+        "rho": 0.8389521352406596,
+        "valid_pairs": 99938,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1",
+        "subtype": "H1N1",
+        "seed": 123,
+        "rho": 0.9098176526139774,
+        "valid_pairs": 99938,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2",
+        "subtype": "H1N1",
+        "seed": 123,
+        "rho": 0.4088722307661613,
+        "valid_pairs": 99938,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2_PC3",
+        "subtype": "H1N1",
+        "seed": 123,
+        "rho": 0.27186787530891365,
+        "valid_pairs": 99938,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "original",
+        "subtype": "H3N2",
+        "seed": 42,
+        "rho": 0.6678182287441444,
+        "valid_pairs": 99751,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "l2_normalized",
+        "subtype": "H3N2",
+        "seed": 42,
+        "rho": 0.6661992935808091,
+        "valid_pairs": 99751,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1",
+        "subtype": "H3N2",
+        "seed": 42,
+        "rho": 0.7252247238458589,
+        "valid_pairs": 99751,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2",
+        "subtype": "H3N2",
+        "seed": 42,
+        "rho": 0.7241614006597529,
+        "valid_pairs": 99751,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2_PC3",
+        "subtype": "H3N2",
+        "seed": 42,
+        "rho": 0.5330065392813951,
+        "valid_pairs": 99751,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "original",
+        "subtype": "H3N2",
+        "seed": 7,
+        "rho": 0.6738246986572614,
+        "valid_pairs": 99752,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "l2_normalized",
+        "subtype": "H3N2",
+        "seed": 7,
+        "rho": 0.6721316510696187,
+        "valid_pairs": 99752,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1",
+        "subtype": "H3N2",
+        "seed": 7,
+        "rho": 0.7287105261607438,
+        "valid_pairs": 99752,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2",
+        "subtype": "H3N2",
+        "seed": 7,
+        "rho": 0.7273509131652275,
+        "valid_pairs": 99752,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2_PC3",
+        "subtype": "H3N2",
+        "seed": 7,
+        "rho": 0.5340907660806481,
+        "valid_pairs": 99752,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "original",
+        "subtype": "H3N2",
+        "seed": 123,
+        "rho": 0.6694296551032677,
+        "valid_pairs": 99737,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "l2_normalized",
+        "subtype": "H3N2",
+        "seed": 123,
+        "rho": 0.6677607572064101,
+        "valid_pairs": 99737,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1",
+        "subtype": "H3N2",
+        "seed": 123,
+        "rho": 0.7246699916008085,
+        "valid_pairs": 99737,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2",
+        "subtype": "H3N2",
+        "seed": 123,
+        "rho": 0.7238212480507283,
+        "valid_pairs": 99737,
+        "requested_pairs": 100000
+      },
+      {
+        "representation": "remove_global_PC1_PC2_PC3",
+        "subtype": "H3N2",
+        "seed": 123,
+        "rho": 0.5318800085863753,
+        "valid_pairs": 99737,
+        "requested_pairs": 100000
+      }
+    ],
+    "aggregate": [
+      {
+        "representation": "l2_normalized",
+        "subtype": "H1N1",
+        "rho_mean": 0.8386082095723005,
+        "rho_sd": 0.0008031921920216167,
+        "valid_pairs_mean": 99947.66666666667
+      },
+      {
+        "representation": "l2_normalized",
+        "subtype": "H3N2",
+        "rho_mean": 0.6686972339522793,
+        "rho_sd": 0.00307505412398288,
+        "valid_pairs_mean": 99746.66666666667
+      },
+      {
+        "representation": "original",
+        "subtype": "H1N1",
+        "rho_mean": 0.853327849181766,
+        "rho_sd": 0.000655759501734727,
+        "valid_pairs_mean": 99947.66666666667
+      },
+      {
+        "representation": "original",
+        "subtype": "H3N2",
+        "rho_mean": 0.6703575275015577,
+        "rho_sd": 0.0031088793149503637,
+        "valid_pairs_mean": 99746.66666666667
+      },
+      {
+        "representation": "remove_global_PC1",
+        "subtype": "H1N1",
+        "rho_mean": 0.909561525140827,
+        "rho_sd": 0.0002567137425566779,
+        "valid_pairs_mean": 99947.66666666667
+      },
+      {
+        "representation": "remove_global_PC1",
+        "subtype": "H3N2",
+        "rho_mean": 0.7262017472024703,
+        "rho_sd": 0.0021902992631216665,
+        "valid_pairs_mean": 99746.66666666667
+      },
+      {
+        "representation": "remove_global_PC1_PC2",
+        "subtype": "H1N1",
+        "rho_mean": 0.40730640973020665,
+        "rho_sd": 0.0024685349393887843,
+        "valid_pairs_mean": 99947.66666666667
+      },
+      {
+        "representation": "remove_global_PC1_PC2",
+        "subtype": "H3N2",
+        "rho_mean": 0.7251111872919029,
+        "rho_sd": 0.0019471016768741781,
+        "valid_pairs_mean": 99746.66666666667
+      },
+      {
+        "representation": "remove_global_PC1_PC2_PC3",
+        "subtype": "H1N1",
+        "rho_mean": 0.2692493160737333,
+        "rho_sd": 0.002745025852621388,
+        "valid_pairs_mean": 99947.66666666667
+      },
+      {
+        "representation": "remove_global_PC1_PC2_PC3",
+        "subtype": "H3N2",
+        "rho_mean": 0.5329924379828062,
+        "rho_sd": 0.0011054462038413513,
+        "valid_pairs_mean": 99746.66666666667
+      }
+    ]
+  }
+}

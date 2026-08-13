@@ -1,0 +1,23 @@
+Cargando cache...
+L_use = min(1701, 1701) = 1701
+H3N2 dedup...
+  unicas: 35127
+H1N1 dedup...
+  unicas: 29328
+N por subtipo: 5000
+
+L=1701  N=5000  dedup  seed=42
+
+[H3N2] Convirtiendo...
+  Array (5000, 1701)  9 MB
+  Calculando distancias (BLAS)...
+  D shape: (5000, 5000)  100 MB
+  TwoNN  trim=0.01: 2.707  |  trim=0.05: 3.548
+
+[H1N1] Convirtiendo...
+  Array (5000, 1701)  9 MB
+  Calculando distancias (BLAS)...
+  D shape: (5000, 5000)  100 MB
+  TwoNN  trim=0.01: 2.638  |  trim=0.05: 3.750
+
+Listo.

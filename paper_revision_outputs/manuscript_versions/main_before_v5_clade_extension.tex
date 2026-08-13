@@ -1,0 +1,434 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\newcommand{\Enc}{\operatorname{Enc}}
+\newcommand{\R}{\mathbb{R}}
+\emergencystretch=3em
+
+\title{Auditing Molecular and Temporal Geometry in AntigenLM Latent Representations of Influenza A HA/NA Sequences}
+\author{
+Carlos Manuel Orrego-Franco
+\and
+Juan Carlos Riaño-Rojas
+}
+% TODO before submission: add institutional affiliations, corresponding author email, and ORCID IDs if required by the target journal.
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Sequence language models are increasingly used as compact representations of rapidly evolving viruses, but their latent geometries should be audited before they are treated as biological or dynamical state spaces. We analyze cached local AntigenLM representations for 111,756 Influenza A HA/NA records from H1N1 and H3N2, each represented as a mean-pooled hidden-state vector $z_i=\Enc_{\theta}(HA_i,NA_i)\in\R^{384}$. Within subtype, pair-sampled Spearman correlations show that latent Euclidean distance is strongly associated with nucleotide molecular-distance proxies: for HA+NA Hamming distance, mean $\rho$ is 0.8538 in H1N1 and 0.6678 in H3N2 across three random pair-sampling seeds. In contrast, global correlations with absolute temporal separation are weak ($\rho=0.0612$ and $0.1540$), consistent with the fact that influenza evolution is not a one-dimensional chronological trajectory. A random embedding negative control gives HA+NA Hamming correlations near zero ($\rho=0.0001$ for H1N1 and 0.0004 for H3N2), indicating that the molecular signal is not a generic consequence of Euclidean distances between random high-dimensional vectors. PCA reveals strong variance concentration (global $n_{95}=3$, participation ratio 1.91), while TwoNN estimates after exact HA+NA deduplication remain in a low single-digit range across sample sizes and trimming choices. Local latent neighborhoods are temporally enriched relative to subtype-matched random baselines after deduplication: median nearest-neighbor time differences are 2 months versus 42--43 months for H1N1 random pairs and 35 months for H3N2 random pairs. Focused robustness checks show that these molecular correlations persist after exact HA+NA deduplication and that within-subtype permutation of collection month labels removes the short-range temporal enrichment when the latent neighbor graph is held fixed. These results support a geometric precondition: the local AntigenLM embedding cloud is molecularly organized under tested nucleotide sequence-distance proxies, exhibits low effective dimension under both linear (PCA) and local (TwoNN) diagnostics, and shows local temporal coherence after deduplication and permutation control. These geometric properties are necessary but not sufficient for downstream applications. We explicitly do not establish antigenic similarity (no HI assays or neutralization titers), phylogenetic validity (no phylogenetic distances or clade labels), sequence-generation reliability, vaccine-strain relevance, or prospective forecasting performance. This work is a geometric audit, not a biological or functional validation.
+\end{abstract}
+
+\section{Introduction}
+
+Influenza A virus evolves through mutation, reassortment, immune selection, and changing epidemiological context. The surface glycoproteins hemagglutinin (HA) and neuraminidase (NA) are central to surveillance because they shape host-cell entry, viral release, subtype identity, and antigenic drift. However, molecular sequence distance, antigenic phenotype, and future evolutionary success are distinct objects: antigenic cartography and serological assays are needed to measure antigenic distance directly, and sequence similarity alone is not a substitute for those data \cite{smith2004mapping,bedford2014integrating}. Before treating any learned representation as a state space for evolutionary dynamics, its geometric properties should be audited directly: Does it preserve molecular similarity? Is it low-dimensional under explicit diagnostics? Does it show structure relevant to evolutionary history? These are preconditions, not substitutes, for biological validation. Specific HA substitutions can have large antigenic effects \cite{koel2013substitutions}, which reinforces the need to distinguish molecular proxies from antigenic claims.
+
+Biological sequence language models provide an attractive route for summarizing large collections of viral sequences. Protein language models have shown that unsupervised sequence training can encode structural and functional information \cite{rives2021biological}, and viral protein language models have been used to study evolutionary escape \cite{hie2021viral}. Genomic language models such as DNABERT, Nucleotide Transformer, and long-context DNA models extend this representation-learning program to nucleotide sequences \cite{ji2021dnabert,dallatorre2025nucleotide,nguyen2023hyenadna}. AntigenLM is a recent influenza-focused DNA language model designed around functional-unit structure and HA/NA forecasting tasks \cite{pei2026antigenlm}.
+
+Before a learned representation is used as a state space for evolutionary dynamics, its geometry should be checked directly. A useful state-space candidate should at minimum organize molecularly similar records, avoid collapsing into an uninterpretable artifact of time or subtype composition, and exhibit enough low-dimensional structure to make downstream modeling plausible. These criteria are weaker than forecasting validation, but they are necessary safeguards against treating a high-dimensional embedding as biologically meaningful by assertion.
+
+This paper conducts a systematic geometric audit of cached local AntigenLM representations for influenza HA/NA sequences. We ask whether these embeddings satisfy three minimal preconditions: molecular organization, avoidance of trivial time/subtype collapse, and low-dimensional structure under explicit diagnostics. We do not test antigenic validity, phylogenetic grounding, or forecasting performance. We do not reproduce the full AntigenLM training or forecasting pipeline. This scope is intentionally narrow: geometric auditing is a prerequisite for deeper work, not a substitute for it.
+
+Operationally, we ask four descriptive questions. First, does latent Euclidean distance track molecular sequence distance within subtype? Second, does latent distance behave like chronological distance, or is temporal structure primarily local? Third, how concentrated is the embedding variance under PCA? Fourth, do local intrinsic-dimension diagnostics agree qualitatively with the linear PCA picture? We intentionally do not reproduce the AntigenLM forecasting pipeline, generate sequences, optimize mutations, infer vaccine strains, or evaluate prospective forecasts.
+
+\section{Methods}
+
+\subsection{Data Source and Scope}
+
+The analysis uses locally processed Influenza A HA/NA records derived from GISAID data \cite{shu2017gisaid}. Records were paired by isolate identifier during preprocessing and retained when HA, NA, subtype, year, and month were available after local quality filters. The current cache contains 111,756 embeddings from records collected between 2000 and 2022: 46,125 H1N1 and 65,631 H3N2 records. Complete sequences are not printed in this manuscript or redistributed in the paper package.
+
+The analysis is limited to the cached HA/NA representations and aggregate metadata. It does not include hemagglutination-inhibition assays, neutralization titers, antigenic map coordinates, Nextstrain clade labels, phylogenetic trees, geographic stratification, host metadata, or prospective post-2022 forecasting outcomes.
+
+\subsection{Local Embedding Extraction}
+
+Each record was encoded with the local AntigenLM-style prediction checkpoint \path{prediction_sequence/pytorch_model.bin} using a local model/tokenizer wrapper reconstructed from configuration files. The tokenizer represents nucleotides at character level and uses structural tokens for subtype, HA, NA, separator, end-of-sequence, and padding. For a record $i$, the input has the form
+\[
+\begin{aligned}
+&\langle subtype\rangle \ \langle HA\rangle \ HA_i \ \langle sep\rangle \\
+&\quad \langle NA\rangle \ NA_i \ \langle eos\rangle .
+\end{aligned}
+\]
+The embedding is the attention-mask-weighted mean of the final hidden states,
+\[
+z_i=\Enc_{\theta}(HA_i,NA_i)\in\R^{384}.
+\]
+The cache metadata records the checkpoint SHA256 hash
+\path{6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff}, maximum sequence length 4000, embedding batch size 4, and no missing cache entries among valid processed records. This local audit should therefore be read as an analysis of the cached representation, not as an official reproduction of all AntigenLM inference or forecasting procedures.
+
+\subsection{Distances}
+
+Latent distance between records $i$ and $j$ is Euclidean:
+\[
+d_Z(i,j)=\lVert z_i-z_j\rVert_2.
+\]
+Temporal distance is absolute collection-date separation in months,
+\[
+d_T(i,j)=\left|12(y_i-y_j)+(m_i-m_j)\right|.
+\]
+For a segment sequence $x$ and $y$, normalized Hamming distance is computed over the shared prefix when the length difference is at most 5\% of the longer sequence:
+\[
+d_H(x,y)=\frac{1}{L}\sum_{\ell=1}^{L}\mathbf{1}\{x_\ell\neq y_\ell\},
+\]
+where $L$ is the shorter length. Pairs exceeding the length-tolerance rule are omitted for that molecular-distance calculation. HA+NA Hamming distance is a length-weighted average of HA and NA segment distances, with weights given by the shorter HA and NA lengths in the pair. These are molecular sequence-distance proxies. They are not curated biological alignments and are not antigenic distances.
+
+A focused robustness panel also computed NA-only nucleotide Hamming distances and simple translated amino-acid Hamming sensitivity proxies. Amino-acid strings were obtained by frame-0 translation of the available nucleotide strings, with ambiguous codons mapped to an unknown amino-acid symbol and trailing incomplete codons dropped. These translated distances are used only as sensitivity analyses. They should not be interpreted as curated protein alignments, protein-level validation, antigenic-site distances, or antigenic measurements.
+
+\subsection{Pair-Sampled Correlations}
+
+Full all-pairs distance matrices are infeasible at this scale. We therefore sampled 200,000 non-self pairs per subtype for each of three random seeds (42, 7, and 123). All pair sampling was performed within subtype to avoid making subtype separation the dominant source of correlation. For each sampled set, we computed Spearman's rank correlation \cite{spearman1904} between $d_Z$ and either $d_T$, HA Hamming distance, or HA+NA Hamming distance. We summarize means and seed-to-seed standard deviations across the three random seeds; these standard deviations are not bootstrap confidence intervals. P-values are not emphasized because pairwise distances are dependent and very large sampled-pair counts can make negligible effects appear statistically significant. The same pair-sampling scale and seeds were reused after exact HA+NA deduplication in the robustness panel.
+
+\subsection{Deduplication}
+
+Exact duplicates are common in viral surveillance data. For TwoNN, local temporal-neighborhood analyses, and robustness pair correlations, we removed exact duplicate HA+NA sequence pairs by retaining the first representative of each exact HA+NA pair encountered in cache order. This left 82,306 records: 36,753 H1N1 and 45,553 H3N2. The primary pair-sampled correlation table uses the full cache, and the robustness table reports deduplicated correlations. This deduplication removes exact HA+NA sequence-pair duplicates only; it does not remove near-duplicates, records duplicated at only one segment, or amino-acid-equivalent nucleotide variants.
+
+\subsection{PCA Effective Dimension}
+
+PCA was computed from the centered embedding matrix using the exact covariance spectrum \cite{jolliffe2002pca,jolliffe2016pca}. We report $n_{80}$, $n_{90}$, $n_{95}$, and $n_{99}$, the number of components required to explain 80\%, 90\%, 95\%, and 99\% of variance. We also report the participation ratio,
+\[
+PR=\frac{(\sum_i\lambda_i)^2}{\sum_i\lambda_i^2},
+\]
+where $\lambda_i$ are positive covariance eigenvalues. PCA effective dimension measures linear variance concentration; it is not identical to local intrinsic dimension or to visualization dimension.
+
+\subsection{TwoNN Intrinsic-Dimension Diagnostic}
+
+TwoNN estimates local intrinsic dimension from ratios of second- to first-nearest-neighbor distances \cite{facco2017intrinsic}. For each point,
+\[
+\mu_i=\frac{r_{2,i}}{r_{1,i}},
+\qquad
+-\log(1-F_i)=d\log(\mu_i),
+\]
+where $r_{1,i}$ and $r_{2,i}$ are nearest-neighbor distances after standardizing embedding coordinates, and $F_i$ is the empirical cumulative distribution of $\mu$. We evaluated sample sizes of 5,000, 10,000, 20,000, and 50,000 after exact HA+NA deduplication, with seeds 42, 7, and 123 and trimming levels 0.01 and 0.05. The result is interpreted as a sensitivity range, not as an exact manifold dimension. Alternative estimators such as Levina-Bickel maximum-likelihood methods and DANCo are discussed as future robustness checks \cite{levina2005maximum,ceruti2014danco}.
+
+\subsection{Random Embedding Control}
+
+To assess whether the observed molecular correlations are non-trivial, we generated a random embedding baseline as a negative control. For each of 10 replicate draws, we independently sampled a 384-dimensional vector for every record from a standard Gaussian distribution, $\mathcal{N}(0,I_{384})$, and normalized each vector to unit $\ell_2$ norm before computing Euclidean distances. This control tests random high-dimensional metric geometry that is independent of HA/NA sequence content.
+
+For each random replicate, we computed Spearman correlations between Euclidean distances in the random embeddings and HA+NA Hamming distances using the same subtype-specific pair-sampling protocol as the main AntigenLM analysis: 200,000 requested non-self pairs per subtype for each pair-sampling seed 42, 7, and 123. Thus, each subtype-specific random baseline summarizes 30 correlations: 10 random embedding replicates times three pair-sampling seeds. If the AntigenLM correlations arose only from generic Euclidean metric effects in high-dimensional space, the random baseline would be expected to produce correlations near zero.
+
+\subsection{Local Temporal Neighborhoods}
+
+For each subtype after exact HA+NA deduplication, we computed Euclidean nearest neighbors in latent space for $k=5,10,20$. Self-matches were excluded by requesting $k+1$ neighbors and removing the first returned neighbor. We compared absolute month-index differences between each record and its top-$k$ latent neighbors against subtype-matched random pairs with the same number of comparisons. As a negative-control variant, we held the latent neighbor graph fixed but permuted collection month-index labels within subtype across three seeds. The random and date-permutation baselines control for subtype-specific date distributions but not for all possible sources of sampling bias, such as geography, host, collection intensity, lineage composition, or sequence length.
+
+\section{Results}
+
+\subsection{Dataset Composition}
+
+The cached dataset contains 111,756 embeddings of dimension 384, with 46,125 H1N1 and 65,631 H3N2 records. The processed records are unevenly distributed across years, reflecting surveillance intensity and subtype-specific sampling histories (Figure~\ref{fig:data-year}). HA and NA length distributions are concentrated near expected segment lengths but include subtype-specific and record-level variation (Figure~\ref{fig:lengths}). Exact HA+NA duplicates are frequent: 9,372 H1N1 records and 20,078 H3N2 records are removed by exact HA+NA deduplication.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{figures/records_by_year_subtype.pdf}
+\caption{Processed records by year and subtype. Counts reflect the local processed GISAID-derived HA/NA dataset used to build the cache.}
+\label{fig:data-year}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/sequence_length_distributions.pdf}
+\caption{HA and NA nucleotide sequence-length distributions by subtype after local preprocessing and quality filtering.}
+\label{fig:lengths}
+\end{figure}
+
+\subsection{Latent Distance Tracks Molecular Distance Much More Strongly Than Global Time}
+
+Within subtype, latent Euclidean distance is strongly associated with nucleotide Hamming distance, especially for the combined HA+NA proxy (Table~\ref{tab:spearman}, Figure~\ref{fig:spearman}). HA+NA Hamming correlations are 0.8538 for H1N1 and 0.6678 for H3N2. HA-only correlations are also substantial: 0.8280 for H1N1 and 0.6082 for H3N2. These values support a molecular organization claim for the local embedding geometry.
+
+By contrast, correlations with absolute temporal separation are weak: 0.0612 for H1N1 and 0.1540 for H3N2. This does not imply absence of evolutionary structure. A branching, reassorting, spatially sampled viral population should not be expected to lie on a single chronological line in latent Euclidean distance. The more relevant question for downstream local modeling is whether neighborhoods, rather than all pairs, are temporally coherent.
+
+\begin{table}[H]
+\centering
+\caption{Pair-sampled Spearman correlations between latent Euclidean distance and temporal or molecular sequence-distance proxies. Values summarize three random pair-sampling seeds, with 200,000 requested pairs per subtype per seed; reported standard deviations are seed-to-seed standard deviations, not confidence intervals. Molecular pairs may be omitted when the length-tolerance rule fails.}
+\label{tab:spearman}
+\begin{tabular}{llrrr}
+\toprule
+Metric & Subtype & $\rho$ mean & $\rho$ sd & valid pairs \\
+\midrule
+Temporal distance & H1N1 & 0.0612 & 0.0009 & 200000 \\
+Temporal distance & H3N2 & 0.1540 & 0.0008 & 200000 \\
+HA Hamming & H1N1 & 0.8280 & 0.0009 & 199914 \\
+HA Hamming & H3N2 & 0.6082 & 0.0005 & 199989 \\
+HA+NA Hamming & H1N1 & 0.8538 & 0.0006 & 199903 \\
+HA+NA Hamming & H3N2 & 0.6678 & 0.0014 & 199538 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/spearman_latent_vs_distances.pdf}
+\caption{Spearman correlation summary for latent Euclidean distance versus temporal and molecular sequence-distance proxies. Correlations are computed within subtype and summarized across random pair-sampling seeds.}
+\label{fig:spearman}
+\end{figure}
+
+\subsection{Random Embeddings Do Not Reproduce the Molecular Signal}
+
+The random embedding negative control produces HA+NA Hamming correlations near zero in both subtypes (Table~\ref{tab:random-baseline}). Across 10 random embedding replicates and three pair-sampling seeds, the mean random baseline correlation is 0.0001 for H1N1 and 0.0004 for H3N2. The corresponding AntigenLM correlations are 0.8538 and 0.6678, respectively.
+
+This result shows that the molecular organization detected in AntigenLM latent distances is not a trivial consequence of computing Euclidean distances among random 384-dimensional vectors. Seed-to-seed and replicate-to-replicate variation in the random baseline is small (standard deviation 0.0019--0.0021), consistent with a stable zero-signal negative control.
+
+\begin{table}[H]
+\centering
+\caption{Random embedding baseline for HA+NA Hamming correlations. Random embeddings are 384-dimensional Gaussian vectors normalized to unit $\ell_2$ norm. Values summarize 10 random embedding replicates and three pair-sampling seeds per replicate, using the same subtype-specific pair-sampling protocol as Table~\ref{tab:spearman}.}
+\label{tab:random-baseline}
+\begin{tabular}{lrrrr}
+\toprule
+Metric & Subtype & random $\rho$ mean & random $\rho$ sd & AntigenLM $\rho$ mean \\
+\midrule
+HA+NA Hamming & H1N1 & 0.0001 & 0.0019 & 0.8538 \\
+HA+NA Hamming & H3N2 & 0.0004 & 0.0021 & 0.6678 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{PCA Shows Strong Linear Variance Concentration}
+
+The global embedding spectrum is highly concentrated (Table~\ref{tab:pca}, Figure~\ref{fig:pca-spectrum}). Two components explain at least 90\% of global variance, three explain at least 95\%, and 10 explain at least 99\%. The global participation ratio is 1.91. Subtype-specific spectra are also concentrated, with H1N1 reaching 95\% variance in three components and H3N2 in five components.
+
+This result should be interpreted as strong anisotropy and low linear effective dimension. It does not, by itself, prove that the data lie on a smooth low-dimensional biological manifold. The first PCs may reflect a mixture of molecular, subtype-specific, temporal, sampling-density, and model-induced directions.
+
+\begin{table}[H]
+\centering
+\caption{PCA effective dimension of AntigenLM embeddings. $n_q$ denotes the number of principal components required to explain fraction $q$ of variance; PR is the participation ratio of the covariance spectrum.}
+\label{tab:pca}
+\begin{tabular}{lrrrrrr}
+\toprule
+Group & n & $n_{80}$ & $n_{90}$ & $n_{95}$ & $n_{99}$ & PR \\
+\midrule
+global & 111,756 & 2 & 2 & 3 & 10 & 1.91 \\
+H1N1 & 46,125 & 1 & 2 & 3 & 11 & 1.43 \\
+H3N2 & 65,631 & 1 & 3 & 5 & 16 & 1.53 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_scree_global.pdf}
+\caption{Global scree plot.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_cumulative_global.pdf}
+\caption{Global cumulative variance.}
+\end{subfigure}
+\caption{Global PCA spectrum. The spectrum is sharply concentrated, supporting low linear effective dimension but not establishing intrinsic manifold dimension.}
+\label{fig:pca-spectrum}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_2d_by_subtype.pdf}
+\caption{Colored by subtype.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/pca_2d_by_year.pdf}
+\caption{Colored by year.}
+\end{subfigure}
+\caption{Two-dimensional global PCA projection. The projection is descriptive and should not be read as a complete representation of evolutionary or antigenic relationships.}
+\label{fig:pca-2d}
+\end{figure}
+
+\subsection{TwoNN Estimates Are Low but Sensitive to Trimming}
+
+TwoNN provides a local nearest-neighbor diagnostic that is complementary to the linear PCA spectrum. After exact HA+NA deduplication, estimated dimension remains stable across sample sizes but changes with trimming level (Table~\ref{tab:twonn}, Figure~\ref{fig:twonn}). With trim 0.01, estimates are approximately 3.85--3.90; with trim 0.05, they are approximately 5.40--5.50. Mean $R^2$ values are near 0.97--0.98.
+
+The key conclusion is not a single exact dimension. Rather, PCA and TwoNN agree qualitatively that the nominal 384-dimensional representation has much lower effective structure under the tested preprocessing choices. The trim sensitivity is informative: intrinsic-dimension estimates should be reported as diagnostics with assumptions, not as fixed biological constants.
+
+\begin{table}[H]
+\centering
+\caption{TwoNN intrinsic-dimension sensitivity after exact HA+NA deduplication. Values summarize three random seeds for each sample size and trim level.}
+\label{tab:twonn}
+\begin{tabular}{rrrr}
+\toprule
+Sample size & trim & dimension mean & $R^2$ mean \\
+\midrule
+5,000 & 0.01 & 3.89 & 0.981 \\
+5,000 & 0.05 & 5.50 & 0.972 \\
+10,000 & 0.01 & 3.88 & 0.978 \\
+10,000 & 0.05 & 5.49 & 0.972 \\
+20,000 & 0.01 & 3.85 & 0.978 \\
+20,000 & 0.05 & 5.45 & 0.971 \\
+50,000 & 0.01 & 3.90 & 0.980 \\
+50,000 & 0.05 & 5.40 & 0.970 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/twonn_sensitivity.pdf}
+\caption{Sensitivity to sample size and trimming.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/twonn_fit_example.pdf}
+\caption{Example linear fit.}
+\end{subfigure}
+\caption{TwoNN intrinsic-dimension diagnostics after exact HA+NA deduplication. Estimates should be interpreted as a sensitivity range because nearest-neighbor intrinsic-dimension methods are affected by density, anisotropy, trimming, and finite-sample effects.}
+\label{fig:twonn}
+\end{figure}
+
+\subsection{Temporal Structure Is Local Rather Than Globally Chronological}
+
+Although global temporal correlations are weak, latent nearest neighbors are much closer in time than subtype-matched random pairs after exact HA+NA deduplication (Table~\ref{tab:temporal-local}, Figure~\ref{fig:temporal-local}). For H1N1, median time difference among latent neighbors is 2 months across $k=5,10,20$, compared with 42--43 months for random subtype-matched pairs. For H3N2, the corresponding medians are 2 months for latent neighbors and 35 months for random pairs.
+
+This result supports local temporal coherence in the embedding cloud. It does not show that latent space is a forecasting model, nor does it rule out sampling-density effects. It does indicate that the molecular organization seen in the distance correlations is accompanied by short-range temporal enrichment in local neighborhoods.
+
+\begin{table}[H]
+\centering
+\caption{Local temporal coherence of latent nearest neighbors after exact HA+NA deduplication. Random baselines are subtype-matched and use the same number of comparisons as the corresponding neighbor set.}
+\label{tab:temporal-local}
+\begin{tabular}{lrrrr}
+\toprule
+Subtype & k & median NN months & median random months & ratio \\
+\midrule
+H1N1 & 5 & 2.00 & 43.00 & 0.047 \\
+H1N1 & 10 & 2.00 & 42.00 & 0.048 \\
+H1N1 & 20 & 2.00 & 42.00 & 0.048 \\
+H3N2 & 5 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 10 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 20 & 2.00 & 35.00 & 0.057 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/temporal_local_neighbors_h1n1_dedup.pdf}
+\caption{H1N1.}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\textwidth]{figures/temporal_local_neighbors_h3n2_dedup.pdf}
+\caption{H3N2.}
+\end{subfigure}
+\caption{Temporal differences of latent nearest neighbors versus subtype-matched random baselines after exact HA+NA deduplication.}
+\label{fig:temporal-local}
+\end{figure}
+
+\subsection{Focused Robustness Checks Support the Main Geometry Claims}
+
+Exact HA+NA deduplication reduces but does not remove the molecular-distance signal (Table~\ref{tab:robust-spearman}). After deduplication, HA+NA nucleotide Hamming correlations remain high: 0.8358 for H1N1 and 0.6315 for H3N2. NA-only nucleotide correlations are lower than HA-only correlations in both subtypes, while the combined HA+NA nucleotide proxy remains the strongest nucleotide-distance summary. The simple translated amino-acid HA+NA sensitivity proxy also remains substantially correlated with latent distance, although it should be interpreted cautiously because it is not based on curated protein alignments.
+
+\begin{table}[H]
+\centering
+\caption{Focused robustness panel after exact HA+NA deduplication. Values are pair-sampled Spearman correlations summarized across seeds 42, 7, and 123 with 200,000 requested pairs per subtype per seed; reported standard deviations are seed-to-seed standard deviations, not confidence intervals. Amino-acid distances use simple frame-0 translation and are included only as sensitivity proxies, not curated protein alignments.}
+\label{tab:robust-spearman}
+\begin{tabular}{llrr}
+\toprule
+Metric & Subtype & $\rho$ mean & $\rho$ sd \\
+\midrule
+Temporal distance & H1N1 & 0.0690 & 0.0031 \\
+Temporal distance & H3N2 & 0.1497 & 0.0017 \\
+Nucleotide HA Hamming & H1N1 & 0.8086 & 0.0013 \\
+Nucleotide HA Hamming & H3N2 & 0.5883 & 0.0006 \\
+Nucleotide NA Hamming & H1N1 & 0.7677 & 0.0010 \\
+Nucleotide NA Hamming & H3N2 & 0.5287 & 0.0025 \\
+Nucleotide HA+NA Hamming & H1N1 & 0.8358 & 0.0010 \\
+Nucleotide HA+NA Hamming & H3N2 & 0.6315 & 0.0015 \\
+Translated amino-acid HA+NA proxy & H1N1 & 0.7563 & 0.0013 \\
+Translated amino-acid HA+NA proxy & H3N2 & 0.6131 & 0.0008 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The temporal-neighborhood result is also robust to a date-label permutation control (Table~\ref{tab:temporal-permutation}). Holding the latent neighbor graph fixed but permuting collection month-index labels within subtype increases median neighbor time differences from 2 months to 42--43 months in H1N1 and 35 months in H3N2, matching the subtype-random baseline. This supports the interpretation that local temporal coherence is tied to the observed collection dates rather than to the marginal date distribution alone, under this specific within-subtype permutation control.
+
+\begin{table}[H]
+\centering
+\caption{Date-label permutation control for local temporal neighborhoods after exact HA+NA deduplication. The latent neighbor graph is fixed and collection month-index labels are permuted within subtype across seeds 42, 7, and 123.}
+\label{tab:temporal-permutation}
+\begin{tabular}{lrrrr}
+\toprule
+Subtype & k & true median months & permuted median months & true/permuted \\
+\midrule
+H1N1 & 5 & 2.00 & 42.33 & 0.047 \\
+H1N1 & 10 & 2.00 & 42.67 & 0.047 \\
+H1N1 & 20 & 2.00 & 42.67 & 0.047 \\
+H3N2 & 5 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 10 & 2.00 & 35.00 & 0.057 \\
+H3N2 & 20 & 2.00 & 35.00 & 0.057 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+
+This audit supports a cautious but useful interpretation of the local AntigenLM embedding cloud. The strongest result is molecular: latent Euclidean distance is highly rank-associated with HA and HA+NA nucleotide Hamming distances within subtype. This indicates that the representation is not merely a high-dimensional black box for these records; its metric geometry captures a substantial amount of input-sequence variation.
+
+The robustness panel strengthens this interpretation within the limits of the controls performed. Molecular correlations persist after exact HA+NA deduplication, and the pattern is not restricted to HA alone: NA-only correlations are also substantial, although lower than HA-only in this panel. The simple translated amino-acid sensitivity proxy gives a qualitatively similar result, while remaining less definitive than a curated protein-alignment analysis.
+
+The temporal results clarify what kind of evolutionary structure is present. Global chronological distance is weakly correlated with latent distance, which is expected for a branching and unevenly sampled viral population. Local neighborhoods, however, are temporally coherent after exact HA+NA deduplication. The within-subtype date-label permutation control moves median neighbor time differences back to random-like values when the latent neighbor graph is held fixed, indicating that the local temporal signal depends on the observed temporal labels rather than only on the marginal collection-date distribution. For future dynamical modeling, this local result is more relevant than global correlation with time, because a state-space model would usually rely on local transitions or local neighborhoods rather than treating all pairs of years as lying along one line.
+
+PCA and TwoNN give complementary evidence of low effective structure. PCA shows that variance is concentrated in a few dominant directions, while TwoNN suggests low local dimension under standardized nearest-neighbor ratios. These are encouraging diagnostics for reduced modeling, but they are not a mathematical proof of a smooth manifold or of the correct dimension for a downstream dynamical model.
+
+The results support a narrow and carefully bounded geometric interpretation: the cached embeddings exhibit molecular organization ($\rho=0.8538$ and 0.6678 for HA+NA), are anisotropic and low-dimensional under tested diagnostics (global PCA $n_{95}=3$; TwoNN estimates approximately 3.9--5.5 depending on trimming), and show local temporal enrichment (median neighbor time difference of 2 months versus 35--43 months for subtype-matched random baselines). These properties are not reproduced by the random embedding control and persist under focused robustness checks, including exact HA+NA deduplication and within-subtype date-label permutation. However, molecular organization, dimensionality, and temporal coherence are geometric properties only. They do not, by themselves, establish antigenic similarity, phylogenetic validity, immune-escape patterns, functional conservation, or forecasting performance. Future work must validate these embeddings against hemagglutination-inhibition data, phylogenetic distances, and prospective forecasting benchmarks before claiming viral-evolutionary or clinical relevance.
+
+\section{Limitations}
+
+The most important limitation is biological. Nucleotide Hamming distance is a molecular sequence-similarity proxy, not a curated alignment, protein structural comparison, or experimental measure of antigenic distance. Hamming distance is useful for a transparent molecular audit, but it does not capture protein structural effects, conservation patterns, epistatic interactions, glycosylation, receptor-binding context, or experimentally measured antigenic effects. This paper does not include: hemagglutination-inhibition assay titers or neutralization measurements, which directly measure antigenic relationships; antigenic cartography coordinates inferred from serological data; curated protein sequence alignments or structural annotations; explicit annotation of known antigenic sites such as the HA receptor-binding domain; clade labels; phylogenetic distances inferred from maximum-likelihood or Bayesian sequence-alignment models; or direct fitness measurements. Therefore, this geometric audit cannot establish antigenic similarity, immune escape, clade success, phylogenetic validity, functional conservation, or vaccine-strain relevance. Any downstream use of these embeddings for viral evolution modeling, strain prioritization, or antigenic interpretation requires independent biological validation.
+
+A second limitation concerns validation of the rank-correlation analysis. Spearman's rank correlation summarizes global association over sampled pairs, but pairwise distances are inherently dependent: each record can participate in multiple pairs, creating structural dependence in the correlation estimate. We report standard deviations across random pair-sampling seeds, and for the random embedding control across random embedding replicates, as sensitivity summaries rather than bootstrap confidence intervals. The true sampling distribution of $\rho$ under pairwise dependence is not captured by seed-to-seed variation. The random embedding baseline demonstrates that the main HA+NA correlations are not reproduced by independent random vectors, but it is still a simple negative control; it does not replace a full metric-validation framework. Missing analyses include Mantel or partial Mantel-style tests, distance-correlation metrics for nonlinear dependence \cite{szekely2007distance}, local k-nearest-neighbor retrieval precision, local distance-quantile analyses, and trustworthiness/continuity metrics for topological preservation \cite{lee2009quality}. These broader diagnostics would provide a more complete picture of how well latent distances preserve molecular neighborhood structure beyond global rank association.
+
+The translated amino-acid robustness analysis is also limited. It uses simple frame-0 translation of the available nucleotide strings, maps ambiguous codons to an unknown symbol, and drops trailing incomplete codons. It is a sensitivity analysis for whether the broad molecular signal persists under a crude translated representation; it is not curated protein extraction, multiple sequence alignment, antigenic-site analysis, protein structural modeling, or protein-level validation. In particular, it does not resolve reading-frame curation issues, signal peptides, numbering schemes, insertion/deletion handling, known HA/NA antigenic regions, or subtype-specific structural context. A stronger protein-level analysis would require curated HA and NA protein sequences, alignment-aware residue comparisons, and ideally linkage to experimental antigenic measurements.
+
+A third limitation concerns interpretation of intrinsic dimension. PCA effective dimension reflects variance concentration but can be driven by anisotropy, subtype clustering, sampling imbalance, duplicated or near-duplicated records, or model-induced dominant directions, not necessarily by a smooth low-dimensional biological manifold. Similarly, TwoNN estimates can be affected by exact and near duplicates, nonuniform density, boundary effects, finite-sample bias, coordinate standardization, and trimming level. We remove exact HA+NA duplicates for TwoNN and local analyses, but near-duplicates and uneven sampling density remain. The current results should therefore be read as evidence for low-dimensional structure under specific diagnostics and preprocessing choices, not as a definitive intrinsic-dimension estimate. The observed range, approximately 3.9--5.5 depending on trimming, is itself evidence that the estimate is assumption-sensitive.
+
+A fourth major limitation is surveillance bias inherent in GISAID-derived sequences. Surveillance intensity, collection laboratory practices, host species, geographic representation, sequencing protocols, and data-sharing practices vary across years, locations, and subtypes. The subtype-matched random baseline controls for marginal date distributions within subtype, and the date-label permutation control asks whether temporal enrichment remains when the latent neighbor graph is held fixed but dates are permuted within subtype. These controls reduce two simple explanations, but they do not account for confounding from geography, host, collection intensity, viral lineage composition, or sampling bursts around outbreaks. Local temporal coherence, including the median nearest-neighbor time difference of 2 months, may partly reflect clustering of samples during surveillance campaigns, pandemic waves, or local outbreaks rather than intrinsic evolutionary dynamics of the underlying viral population. Resolving this confound would require stratification by geography, host, lineage, or sampling regime, which is not performed here. The temporal signal should therefore be interpreted cautiously as a property of the sampled dataset and cached representation, not necessarily as a direct estimate of population-level evolutionary tempo.
+
+Finally, this analysis is not a reproduction or validation of the full AntigenLM forecasting pipeline \cite{pei2026antigenlm}. We do not decode or generate sequences from the embeddings, train a downstream dynamical model, score candidate viral mutations or optimization strategies, evaluate performance on post-2022 prospective forecasts, compare against phylogenetic forecasting methods such as fitness models or tree-shape predictors \cite{luksza2014fitness,neher2014predicting}, or benchmark against WHO seasonal vaccine-strain selections. This is a geometry audit, not a forecasting, antigenic, or functional validation. The presence of molecular organization, low effective dimension, and local temporal structure is a favorable precondition for future modeling, but it is not evidence of sufficient performance for clinical or public-health decision-making.
+
+\section{Reproducibility and Data Availability}
+
+The local analysis pipeline is script-based. Embeddings were produced by \path{latent_geometry.py}, full-data metrics and figures by \path{latent_geometry_full_analysis.py}, and the paper package by \path{make_paper_1_latent_geometry_full.py}. The focused robustness panel was run with \path{paper_revision_outputs/run_robustness_panel.py}, and the random embedding negative control with \path{paper_revision_outputs/run_random_embedding_baseline.py}. The primary aggregate results are stored in \path{results/latent_geometry_full_metrics.json} and summarized in \path{results/latent_geometry_full_summary.md}; robustness results are stored in \path{paper_revision_outputs/robustness_panel_results.json} and \path{paper_revision_outputs/robustness_panel_summary.md}; random-baseline results are stored in \path{paper_revision_outputs/random_embedding_baseline_results.json} and \path{paper_revision_outputs/random_embedding_baseline_summary.md}. The manuscript tables and figures are generated from aggregate outputs and copied into the paper directory.
+
+Raw sequence redistribution may be restricted by the terms of the original data source. For that reason, this manuscript reports aggregate metrics, counts, tables, and figures rather than complete sequences. Code and aggregate results are publicly available at \url{https://github.com/cmorregof/latent_geometry}. The repository includes all analysis scripts, aggregate JSON outputs, and instructions for authorized GISAID users to rebuild the processed dataset and embedding cache using the documented AntigenLM checkpoint (SHA256: \path{6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff}). Any final data-availability statement should also follow the applicable GISAID acknowledgement and data-use terms, without redistributing restricted full sequences.
+
+\subsection*{Data Availability Statement}
+
+Raw Influenza A HA/NA sequences are derived from GISAID \cite{shu2017gisaid} and may be subject to GISAID data-use agreements and acknowledgement policies. Complete sequences are not redistributed in this manuscript or supplementary materials. Aggregate outputs used by the manuscript are available in the paper repository as JSON and Markdown files, including \path{results/latent_geometry_full_metrics.json} for the primary analysis, \path{paper_revision_outputs/robustness_panel_results.json} for deduplicated robustness checks, and \path{paper_revision_outputs/random_embedding_baseline_results.json} for the random embedding negative control. Code and aggregate results are publicly available at \url{https://github.com/cmorregof/latent_geometry}. The repository includes all analysis scripts, aggregate JSON outputs, and instructions for authorized GISAID users to rebuild the processed dataset and embedding cache using the documented AntigenLM checkpoint (SHA256: \path{6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff}). Sequence data are subject to GISAID data-use agreements. Users wishing to access the underlying sequences must apply for GISAID access and agree to applicable terms. A full list of GISAID accession identifiers for records used in this analysis is provided in Supplementary Table~S1 in accordance with GISAID acknowledgement requirements.
+
+\section{Ethics, Biosafety, and Responsible Use}
+
+This work is an analysis of existing influenza sequence embeddings. It does not generate viral sequences, optimize mutations, synthesize constructs, provide experimental protocols, make vaccine recommendations, or advise clinical or public-health decisions. Any future use of learned representations for forecasting, strain prioritization, or antigenic interpretation should be evaluated with appropriate prospective validation, domain review, and biosafety governance.
+
+\section{Conclusion}
+
+We present a systematic geometric audit of AntigenLM embeddings for 111,756 Influenza A HA/NA records. The results show that latent Euclidean distance correlates strongly with nucleotide sequence-distance proxies ($\rho=0.8538$ for H1N1 and 0.6678 for H3N2 using HA+NA Hamming distance), while random unit-normalized Gaussian embeddings give correlations near zero. The embedding cloud also shows strong linear variance concentration under PCA, low local nearest-neighbor dimension under TwoNN diagnostics, and local temporal enrichment relative to subtype-matched random baselines. Focused robustness checks show that molecular correlations persist after exact HA+NA deduplication and that within-subtype date-label permutation removes the observed local temporal enrichment when the latent neighbor graph is held fixed.
+
+These results show that the cached embedding cloud has useful geometric structure for local molecular and temporal organization under the diagnostics tested here. They do not establish antigenic prediction, phylogenetic grounding, immune-escape interpretation, vaccine-strain relevance, sequence-generation reliability, or forecasting skill. The findings should be treated as a geometric precondition, favorable but not sufficient, for future probabilistic modeling of influenza evolution. Biological validation against hemagglutination-inhibition assays or neutralization data, phylogenetic distances, clade annotations, and prospective post-2022 forecasting benchmarks remains essential before claiming evolutionary or clinical relevance.
+
+\section*{Acknowledgments}
+
+We gratefully acknowledge all data contributors, i.e., the Authors and Originating laboratories responsible for obtaining the specimens, as well as the Submitting laboratories for generating the sequence and metadata and sharing via the GISAID Initiative, on which this research is based.
+
+The GISAID EpiFlu database is described in Shu and McCauley \cite{shu2017gisaid}: GISAID: Global initiative on sharing all influenza data -- from vision to reality. \emph{Euro Surveillance}. 22(13):30494. DOI: 10.2807/1560-7917.ES.2017.22.13.30494.
+
+A full list of contributing laboratories and sequence accession identifiers for the records used in this analysis is provided in Supplementary Table~S1, to be included in the submission package following GISAID data-use guidelines.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

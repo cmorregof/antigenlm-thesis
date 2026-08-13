@@ -1,0 +1,59 @@
+AVISO: scikit-dimension no instalado. Ejecuta: pip install scikit-dimension
+
+Cargando cache de embeddings: results/embeddings_cache_10k_per_subtype_seed42.pkl
+  Cache cargado: embeddings=(20000, 384) records=20000
+  Metadata: sampling=stratified_by_year seed=42 max_per_subtype=10000
+  Checkpoint cacheado: prediction_sequence/pytorch_model.bin size=1076663612
+
+[Experimento 1] UMAP omitido por --skip-umap
+
+[Experimento 2] Correlacion de Spearman (por subtipo)...
+  Metrica de distancia: temporal
+  AVISO: usa distancia temporal en meses como proxy; no es Hamming ni distancia biologica.
+  H3N2: rho=0.1172  p=2.42e-152  validos=50,000 omitidos=0  [DEBIL]
+  H1N1: rho=0.1700  p=0.00e+00  validos=50,000 omitidos=0  [DEBIL]
+
+[Experimento 3] Interpolacion omitida por --skip-interpolation
+
+[Experimento 4] Dimension intrinseca omitida por --skip-intrinsic-dim
+
+============================================================
+REPORTE DE GEOMETRIA DEL ESPACIO LATENTE - AntigenLM
+============================================================
+
+EXPERIMENTO 1: UMAP
+  Ver figures/gisaid/umap_by_year.png si fue ejecutado
+  Ver figures/gisaid/umap_by_subtype.png si fue ejecutado
+
+MUESTREO USADO:
+  H1N1 total=10000 | 2000:87, 2001:121, 2002:11, 2003:38, 2004:8, 2005:57, 2006:99, 2007:510, 2008:355, 2009:667, 2010:627, 2011:630, 2012:623, 2013:632, 2014:628, 2015:637, 2016:654, 2017:646, 2018:675, 2019:682, 2020:650, 2021:625, 2022:338
+  H3N2 total=10000 | 2000:172, 2001:93, 2002:221, 2003:446, 2004:346, 2005:352, 2006:143, 2007:321, 2008:366, 2009:538, 2010:538, 2011:538, 2012:538, 2013:538, 2014:538, 2015:539, 2016:539, 2017:539, 2018:539, 2019:539, 2020:539, 2021:539, 2022:539
+
+EXPERIMENTO 2: CORRELACION DE SPEARMAN (por subtipo)
+  Metrica = temporal
+  rho promedio = 0.1436
+  p promedio   = 1.21e-152
+  ADVERTENCIA: Spearman usa distancia temporal en meses como proxy;
+  no mide Hamming, distancia antigenica ni distancia biologica real.
+
+EXPERIMENTO 3: INTERPOLACION LINEAL
+  No ejecutado
+  ADVERTENCIA: la prueba interpola linealmente en el propio espacio latente;
+  un CV cercano a cero puede ser tautologico y no prueba dinamica biologica.
+
+EXPERIMENTO 4: DIMENSION INTRINSECA
+  No ejecutado
+
+CONCLUSION:
+  Los resultados preliminares no descartan el uso del espacio latente
+  para dinamicas continuas, pero aun son insuficientes para justificar
+  plenamente una SDE. Se requieren pruebas adicionales de metrica
+  biologica, dimension intrinseca y estabilidad bajo muestreo.
+
+Reporte no escrito en disco.
+
+============================================================
+Analisis completado.
+Figuras: no escritas en esta corrida
+Reporte: no escrito en esta corrida
+============================================================

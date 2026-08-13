@@ -1,0 +1,1196 @@
+{
+  "created_at": "2026-05-05 09:07:58 -05",
+  "runtime_seconds": 25.41886806488037,
+  "cache_path": "results/embeddings_cache_full_all_available.pkl",
+  "cache_metadata": {
+    "sampling_strategy": "all",
+    "seed": 42,
+    "max_per_subtype": -1,
+    "max_seq_length": 4000,
+    "embedding_batch_size": 4,
+    "created_at_utc": "2026-05-05T09:40:15Z",
+    "checkpoint": {
+      "path": "prediction_sequence/pytorch_model.bin",
+      "exists": true,
+      "size_bytes": 1076663612,
+      "mtime": 1776879300.0,
+      "sha256": "6b942a0e2d6af0528a7307ff5754438ad55fdb97390297e9c0f11ffc9803dbff"
+    }
+  },
+  "parameters": {
+    "pair_samples_per_subtype": 200000,
+    "pair_seeds": [
+      42,
+      7,
+      123
+    ],
+    "temporal_k_values": [
+      5,
+      10,
+      20
+    ],
+    "temporal_permutation_seeds": [
+      42,
+      7,
+      123
+    ]
+  },
+  "deduplicated_spearman": {
+    "deduplicated_n": 82306,
+    "removed_duplicates": {
+      "H3N2": 20078,
+      "H1N1": 9372
+    },
+    "pair_samples_per_subtype": 200000,
+    "seeds": [
+      42,
+      7,
+      123
+    ],
+    "rows": [
+      {
+        "seed": 42,
+        "subtype": "H1N1",
+        "metric": "temporal",
+        "rho": 0.06636296314866554,
+        "pvalue": 5.538162090667359e-194,
+        "requested_pairs": 200000,
+        "valid_pairs": 200000,
+        "omitted_pairs": 0
+      },
+      {
+        "seed": 42,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_ha",
+        "rho": 0.8068539815497304,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199870,
+        "omitted_pairs": 130
+      },
+      {
+        "seed": 42,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_na",
+        "rho": 0.766530831894628,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199986,
+        "omitted_pairs": 14
+      },
+      {
+        "seed": 42,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_ha_na",
+        "rho": 0.8344061231709867,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199856,
+        "omitted_pairs": 144
+      },
+      {
+        "seed": 42,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_ha",
+        "rho": 0.7201603783059103,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199870,
+        "omitted_pairs": 130
+      },
+      {
+        "seed": 42,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_na",
+        "rho": 0.6829083135493044,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199986,
+        "omitted_pairs": 14
+      },
+      {
+        "seed": 42,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_ha_na",
+        "rho": 0.7544324577482766,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199856,
+        "omitted_pairs": 144
+      },
+      {
+        "seed": 42,
+        "subtype": "H3N2",
+        "metric": "temporal",
+        "rho": 0.14876785159828881,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 200000,
+        "omitted_pairs": 0
+      },
+      {
+        "seed": 42,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_ha",
+        "rho": 0.5878329611995547,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199982,
+        "omitted_pairs": 18
+      },
+      {
+        "seed": 42,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_na",
+        "rho": 0.5282144382381145,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199345,
+        "omitted_pairs": 655
+      },
+      {
+        "seed": 42,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_ha_na",
+        "rho": 0.6302146878790553,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199338,
+        "omitted_pairs": 662
+      },
+      {
+        "seed": 42,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_ha",
+        "rho": 0.6346475665866113,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199982,
+        "omitted_pairs": 18
+      },
+      {
+        "seed": 42,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_na",
+        "rho": 0.44966489519137,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199346,
+        "omitted_pairs": 654
+      },
+      {
+        "seed": 42,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_ha_na",
+        "rho": 0.6130256876622114,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199339,
+        "omitted_pairs": 661
+      },
+      {
+        "seed": 7,
+        "subtype": "H1N1",
+        "metric": "temporal",
+        "rho": 0.07332063560881971,
+        "pvalue": 1.9287165651210417e-236,
+        "requested_pairs": 200000,
+        "valid_pairs": 200000,
+        "omitted_pairs": 0
+      },
+      {
+        "seed": 7,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_ha",
+        "rho": 0.8089069537546657,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199897,
+        "omitted_pairs": 103
+      },
+      {
+        "seed": 7,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_na",
+        "rho": 0.7689449592383172,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199985,
+        "omitted_pairs": 15
+      },
+      {
+        "seed": 7,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_ha_na",
+        "rho": 0.8365819460140071,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199882,
+        "omitted_pairs": 118
+      },
+      {
+        "seed": 7,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_ha",
+        "rho": 0.7240407194418138,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199897,
+        "omitted_pairs": 103
+      },
+      {
+        "seed": 7,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_na",
+        "rho": 0.6845944167104763,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199985,
+        "omitted_pairs": 15
+      },
+      {
+        "seed": 7,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_ha_na",
+        "rho": 0.7572527357457024,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199882,
+        "omitted_pairs": 118
+      },
+      {
+        "seed": 7,
+        "subtype": "H3N2",
+        "metric": "temporal",
+        "rho": 0.14823934067903755,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 200000,
+        "omitted_pairs": 0
+      },
+      {
+        "seed": 7,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_ha",
+        "rho": 0.5878692189927205,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199980,
+        "omitted_pairs": 20
+      },
+      {
+        "seed": 7,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_na",
+        "rho": 0.5259669220606843,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199347,
+        "omitted_pairs": 653
+      },
+      {
+        "seed": 7,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_ha_na",
+        "rho": 0.630569635747382,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199340,
+        "omitted_pairs": 660
+      },
+      {
+        "seed": 7,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_ha",
+        "rho": 0.6347903587995692,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199980,
+        "omitted_pairs": 20
+      },
+      {
+        "seed": 7,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_na",
+        "rho": 0.44680766957948814,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199352,
+        "omitted_pairs": 648
+      },
+      {
+        "seed": 7,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_ha_na",
+        "rho": 0.6121096299893883,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199345,
+        "omitted_pairs": 655
+      },
+      {
+        "seed": 123,
+        "subtype": "H1N1",
+        "metric": "temporal",
+        "rho": 0.06744227275844664,
+        "pvalue": 2.730700243625328e-200,
+        "requested_pairs": 200000,
+        "valid_pairs": 200000,
+        "omitted_pairs": 0
+      },
+      {
+        "seed": 123,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_ha",
+        "rho": 0.80992559587441,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199909,
+        "omitted_pairs": 91
+      },
+      {
+        "seed": 123,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_na",
+        "rho": 0.7675951971816539,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199984,
+        "omitted_pairs": 16
+      },
+      {
+        "seed": 123,
+        "subtype": "H1N1",
+        "metric": "nt_hamming_ha_na",
+        "rho": 0.8363695139305685,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199893,
+        "omitted_pairs": 107
+      },
+      {
+        "seed": 123,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_ha",
+        "rho": 0.7242149693719311,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199908,
+        "omitted_pairs": 92
+      },
+      {
+        "seed": 123,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_na",
+        "rho": 0.6821375755828385,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199983,
+        "omitted_pairs": 17
+      },
+      {
+        "seed": 123,
+        "subtype": "H1N1",
+        "metric": "aa_hamming_ha_na",
+        "rho": 0.7571026854563536,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199891,
+        "omitted_pairs": 109
+      },
+      {
+        "seed": 123,
+        "subtype": "H3N2",
+        "metric": "temporal",
+        "rho": 0.15205640961138792,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 200000,
+        "omitted_pairs": 0
+      },
+      {
+        "seed": 123,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_ha",
+        "rho": 0.589155315473854,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199981,
+        "omitted_pairs": 19
+      },
+      {
+        "seed": 123,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_na",
+        "rho": 0.5319311962312195,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199373,
+        "omitted_pairs": 627
+      },
+      {
+        "seed": 123,
+        "subtype": "H3N2",
+        "metric": "nt_hamming_ha_na",
+        "rho": 0.6336235984576412,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199366,
+        "omitted_pairs": 634
+      },
+      {
+        "seed": 123,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_ha",
+        "rho": 0.6362013029549174,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199981,
+        "omitted_pairs": 19
+      },
+      {
+        "seed": 123,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_na",
+        "rho": 0.45015866766566126,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199380,
+        "omitted_pairs": 620
+      },
+      {
+        "seed": 123,
+        "subtype": "H3N2",
+        "metric": "aa_hamming_ha_na",
+        "rho": 0.614081545159614,
+        "pvalue": 0.0,
+        "requested_pairs": 200000,
+        "valid_pairs": 199373,
+        "omitted_pairs": 627
+      }
+    ],
+    "aggregate": [
+      {
+        "metric": "aa_hamming_ha",
+        "subtype": "H1N1",
+        "rho_mean": 0.7228053557065518,
+        "rho_sd": 0.0018716338400738583,
+        "valid_pairs_mean": 199891.66666666666,
+        "omitted_pairs_mean": 108.33333333333333
+      },
+      {
+        "metric": "aa_hamming_ha",
+        "subtype": "H3N2",
+        "rho_mean": 0.6352130761136993,
+        "rho_sd": 0.0007012092513642794,
+        "valid_pairs_mean": 199981.0,
+        "omitted_pairs_mean": 19.0
+      },
+      {
+        "metric": "aa_hamming_ha_na",
+        "subtype": "H1N1",
+        "rho_mean": 0.7562626263167775,
+        "rho_sd": 0.0012955736217804532,
+        "valid_pairs_mean": 199876.33333333334,
+        "omitted_pairs_mean": 123.66666666666667
+      },
+      {
+        "metric": "aa_hamming_ha_na",
+        "subtype": "H3N2",
+        "rho_mean": 0.6130722876037379,
+        "rho_sd": 0.0008057050848187671,
+        "valid_pairs_mean": 199352.33333333334,
+        "omitted_pairs_mean": 647.6666666666666
+      },
+      {
+        "metric": "aa_hamming_na",
+        "subtype": "H1N1",
+        "rho_mean": 0.683213435280873,
+        "rho_sd": 0.001025943966929876,
+        "valid_pairs_mean": 199984.66666666666,
+        "omitted_pairs_mean": 15.333333333333334
+      },
+      {
+        "metric": "aa_hamming_na",
+        "subtype": "H3N2",
+        "rho_mean": 0.44887707747883976,
+        "rho_sd": 0.0014771119579585473,
+        "valid_pairs_mean": 199359.33333333334,
+        "omitted_pairs_mean": 640.6666666666666
+      },
+      {
+        "metric": "nt_hamming_ha",
+        "subtype": "H1N1",
+        "rho_mean": 0.808562177059602,
+        "rho_sd": 0.0012774602060308343,
+        "valid_pairs_mean": 199892.0,
+        "omitted_pairs_mean": 108.0
+      },
+      {
+        "metric": "nt_hamming_ha",
+        "subtype": "H3N2",
+        "rho_mean": 0.5882858318887098,
+        "rho_sd": 0.000614995899995988,
+        "valid_pairs_mean": 199981.0,
+        "omitted_pairs_mean": 19.0
+      },
+      {
+        "metric": "nt_hamming_ha_na",
+        "subtype": "H1N1",
+        "rho_mean": 0.8357858610385208,
+        "rho_sd": 0.0009794690006491925,
+        "valid_pairs_mean": 199877.0,
+        "omitted_pairs_mean": 123.0
+      },
+      {
+        "metric": "nt_hamming_ha_na",
+        "subtype": "H3N2",
+        "rho_mean": 0.6314693073613595,
+        "rho_sd": 0.0015301905312620921,
+        "valid_pairs_mean": 199348.0,
+        "omitted_pairs_mean": 652.0
+      },
+      {
+        "metric": "nt_hamming_na",
+        "subtype": "H1N1",
+        "rho_mean": 0.7676903294381997,
+        "rho_sd": 0.0009878563720040678,
+        "valid_pairs_mean": 199985.0,
+        "omitted_pairs_mean": 15.0
+      },
+      {
+        "metric": "nt_hamming_na",
+        "subtype": "H3N2",
+        "rho_mean": 0.5287041855100062,
+        "rho_sd": 0.0024594079081589814,
+        "valid_pairs_mean": 199355.0,
+        "omitted_pairs_mean": 645.0
+      },
+      {
+        "metric": "temporal",
+        "subtype": "H1N1",
+        "rho_mean": 0.0690419571719773,
+        "rho_sd": 0.0030574002227237293,
+        "valid_pairs_mean": 200000.0,
+        "omitted_pairs_mean": 0.0
+      },
+      {
+        "metric": "temporal",
+        "subtype": "H3N2",
+        "rho_mean": 0.1496878672962381,
+        "rho_sd": 0.0016886534027509262,
+        "valid_pairs_mean": 200000.0,
+        "omitted_pairs_mean": 0.0
+      }
+    ]
+  },
+  "temporal_permutation": {
+    "deduplicated_n": 82306,
+    "removed_duplicates": {
+      "H3N2": 20078,
+      "H1N1": 9372
+    },
+    "k_values": [
+      5,
+      10,
+      20
+    ],
+    "seeds": [
+      42,
+      7,
+      123
+    ],
+    "rows": [
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 5,
+        "seed": 42,
+        "true_neighbor": {
+          "n": 183765,
+          "mean": 5.2940004897559385,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 4.0
+        },
+        "permuted_neighbor": {
+          "n": 183765,
+          "mean": 53.753799689821236,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 183765,
+          "mean": 53.92332054526161,
+          "median": 43.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.047619047619047616,
+        "median_ratio_true_to_random": 0.046511627906976744
+      },
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 5,
+        "seed": 7,
+        "true_neighbor": {
+          "n": 183765,
+          "mean": 5.2940004897559385,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 4.0
+        },
+        "permuted_neighbor": {
+          "n": 183765,
+          "mean": 53.853073218512776,
+          "median": 43.0,
+          "p25": 15.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 183765,
+          "mean": 53.72678148722553,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.046511627906976744,
+        "median_ratio_true_to_random": 0.047619047619047616
+      },
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 5,
+        "seed": 123,
+        "true_neighbor": {
+          "n": 183765,
+          "mean": 5.2940004897559385,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 4.0
+        },
+        "permuted_neighbor": {
+          "n": 183765,
+          "mean": 53.78982395994885,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 183765,
+          "mean": 53.78941583000027,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.047619047619047616,
+        "median_ratio_true_to_random": 0.047619047619047616
+      },
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 10,
+        "seed": 42,
+        "true_neighbor": {
+          "n": 367530,
+          "mean": 6.337874459227818,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 5.0
+        },
+        "permuted_neighbor": {
+          "n": 367530,
+          "mean": 53.69489837564281,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 367530,
+          "mean": 53.79126057736784,
+          "median": 43.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.047619047619047616,
+        "median_ratio_true_to_random": 0.046511627906976744
+      },
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 10,
+        "seed": 7,
+        "true_neighbor": {
+          "n": 367530,
+          "mean": 6.337874459227818,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 5.0
+        },
+        "permuted_neighbor": {
+          "n": 367530,
+          "mean": 53.861913313198926,
+          "median": 43.0,
+          "p25": 15.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 367530,
+          "mean": 53.7983103420129,
+          "median": 43.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.046511627906976744,
+        "median_ratio_true_to_random": 0.046511627906976744
+      },
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 10,
+        "seed": 123,
+        "true_neighbor": {
+          "n": 367530,
+          "mean": 6.337874459227818,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 5.0
+        },
+        "permuted_neighbor": {
+          "n": 367530,
+          "mean": 53.794403177971866,
+          "median": 43.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 367530,
+          "mean": 53.73647049220472,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.046511627906976744,
+        "median_ratio_true_to_random": 0.047619047619047616
+      },
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 20,
+        "seed": 42,
+        "true_neighbor": {
+          "n": 735060,
+          "mean": 7.598464070960194,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 7.0
+        },
+        "permuted_neighbor": {
+          "n": 735060,
+          "mean": 53.68820776535249,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 735060,
+          "mean": 53.768744048104914,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.047619047619047616,
+        "median_ratio_true_to_random": 0.047619047619047616
+      },
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 20,
+        "seed": 7,
+        "true_neighbor": {
+          "n": 735060,
+          "mean": 7.598464070960194,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 7.0
+        },
+        "permuted_neighbor": {
+          "n": 735060,
+          "mean": 53.86442603324899,
+          "median": 43.0,
+          "p25": 15.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 735060,
+          "mean": 53.78876690338204,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.046511627906976744,
+        "median_ratio_true_to_random": 0.047619047619047616
+      },
+      {
+        "subtype": "H1N1",
+        "n_points": 36753,
+        "k": 20,
+        "seed": 123,
+        "true_neighbor": {
+          "n": 735060,
+          "mean": 7.598464070960194,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 7.0
+        },
+        "permuted_neighbor": {
+          "n": 735060,
+          "mean": 53.816409544799065,
+          "median": 43.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "subtype_random": {
+          "n": 735060,
+          "mean": 53.708648273610315,
+          "median": 42.0,
+          "p25": 14.0,
+          "p75": 88.0
+        },
+        "median_ratio_true_to_permuted": 0.046511627906976744,
+        "median_ratio_true_to_random": 0.047619047619047616
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 5,
+        "seed": 42,
+        "true_neighbor": {
+          "n": 227765,
+          "mean": 5.0933506025947795,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 4.0
+        },
+        "permuted_neighbor": {
+          "n": 227765,
+          "mean": 48.96787478321955,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "subtype_random": {
+          "n": 227765,
+          "mean": 49.0769345597436,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 66.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 5,
+        "seed": 7,
+        "true_neighbor": {
+          "n": 227765,
+          "mean": 5.0933506025947795,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 4.0
+        },
+        "permuted_neighbor": {
+          "n": 227765,
+          "mean": 49.13648716879239,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 66.0
+        },
+        "subtype_random": {
+          "n": 227765,
+          "mean": 49.03980418413716,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 66.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 5,
+        "seed": 123,
+        "true_neighbor": {
+          "n": 227765,
+          "mean": 5.0933506025947795,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 4.0
+        },
+        "permuted_neighbor": {
+          "n": 227765,
+          "mean": 48.93062147388756,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "subtype_random": {
+          "n": 227765,
+          "mean": 48.89745132043993,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 10,
+        "seed": 42,
+        "true_neighbor": {
+          "n": 455530,
+          "mean": 5.975206901850592,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 6.0
+        },
+        "permuted_neighbor": {
+          "n": 455530,
+          "mean": 48.94605185168924,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "subtype_random": {
+          "n": 455530,
+          "mean": 49.18629508484622,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 66.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 10,
+        "seed": 7,
+        "true_neighbor": {
+          "n": 455530,
+          "mean": 5.975206901850592,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 6.0
+        },
+        "permuted_neighbor": {
+          "n": 455530,
+          "mean": 49.107079665444644,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 66.0
+        },
+        "subtype_random": {
+          "n": 455530,
+          "mean": 49.03297916712401,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 66.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 10,
+        "seed": 123,
+        "true_neighbor": {
+          "n": 455530,
+          "mean": 5.975206901850592,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 6.0
+        },
+        "permuted_neighbor": {
+          "n": 455530,
+          "mean": 48.93148859570171,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "subtype_random": {
+          "n": 455530,
+          "mean": 48.9205826180493,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 20,
+        "seed": 42,
+        "true_neighbor": {
+          "n": 911060,
+          "mean": 7.183234913178056,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 7.0
+        },
+        "permuted_neighbor": {
+          "n": 911060,
+          "mean": 48.95402937237942,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "subtype_random": {
+          "n": 911060,
+          "mean": 49.06186639738327,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 66.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 20,
+        "seed": 7,
+        "true_neighbor": {
+          "n": 911060,
+          "mean": 7.183234913178056,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 7.0
+        },
+        "permuted_neighbor": {
+          "n": 911060,
+          "mean": 49.041145478892716,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 66.0
+        },
+        "subtype_random": {
+          "n": 911060,
+          "mean": 49.02762276908217,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "n_points": 45553,
+        "k": 20,
+        "seed": 123,
+        "true_neighbor": {
+          "n": 911060,
+          "mean": 7.183234913178056,
+          "median": 2.0,
+          "p25": 1.0,
+          "p75": 7.0
+        },
+        "permuted_neighbor": {
+          "n": 911060,
+          "mean": 48.95118762759862,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "subtype_random": {
+          "n": 911060,
+          "mean": 48.9467751849494,
+          "median": 35.0,
+          "p25": 16.0,
+          "p75": 65.0
+        },
+        "median_ratio_true_to_permuted": 0.05714285714285714,
+        "median_ratio_true_to_random": 0.05714285714285714
+      }
+    ],
+    "aggregate": [
+      {
+        "subtype": "H1N1",
+        "k": 5,
+        "true_median_months": 2.0,
+        "permuted_median_months_mean": 42.333333333333336,
+        "permuted_median_months_sd": 0.4714045207910317,
+        "random_median_months_mean": 42.333333333333336,
+        "random_median_months_sd": 0.4714045207910317,
+        "true_to_permuted_median_ratio": 0.047244094488188976,
+        "true_to_random_median_ratio": 0.047244094488188976
+      },
+      {
+        "subtype": "H1N1",
+        "k": 10,
+        "true_median_months": 2.0,
+        "permuted_median_months_mean": 42.666666666666664,
+        "permuted_median_months_sd": 0.4714045207910317,
+        "random_median_months_mean": 42.666666666666664,
+        "random_median_months_sd": 0.4714045207910317,
+        "true_to_permuted_median_ratio": 0.046875,
+        "true_to_random_median_ratio": 0.046875
+      },
+      {
+        "subtype": "H1N1",
+        "k": 20,
+        "true_median_months": 2.0,
+        "permuted_median_months_mean": 42.666666666666664,
+        "permuted_median_months_sd": 0.4714045207910317,
+        "random_median_months_mean": 42.0,
+        "random_median_months_sd": 0.0,
+        "true_to_permuted_median_ratio": 0.046875,
+        "true_to_random_median_ratio": 0.047619047619047616
+      },
+      {
+        "subtype": "H3N2",
+        "k": 5,
+        "true_median_months": 2.0,
+        "permuted_median_months_mean": 35.0,
+        "permuted_median_months_sd": 0.0,
+        "random_median_months_mean": 35.0,
+        "random_median_months_sd": 0.0,
+        "true_to_permuted_median_ratio": 0.05714285714285714,
+        "true_to_random_median_ratio": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "k": 10,
+        "true_median_months": 2.0,
+        "permuted_median_months_mean": 35.0,
+        "permuted_median_months_sd": 0.0,
+        "random_median_months_mean": 35.0,
+        "random_median_months_sd": 0.0,
+        "true_to_permuted_median_ratio": 0.05714285714285714,
+        "true_to_random_median_ratio": 0.05714285714285714
+      },
+      {
+        "subtype": "H3N2",
+        "k": 20,
+        "true_median_months": 2.0,
+        "permuted_median_months_mean": 35.0,
+        "permuted_median_months_sd": 0.0,
+        "random_median_months_mean": 35.0,
+        "random_median_months_sd": 0.0,
+        "true_to_permuted_median_ratio": 0.05714285714285714,
+        "true_to_random_median_ratio": 0.05714285714285714
+      }
+    ]
+  }
+}

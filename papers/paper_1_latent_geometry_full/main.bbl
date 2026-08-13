@@ -1,0 +1,29 @@
+\begin{thebibliography}{1}
+
+\bibitem{facco2017intrinsic}
+Elena Facco, Maria d'Errico, Alex Rodriguez, and Alessandro Laio.
+\newblock Estimating the intrinsic dimension of datasets by a minimal neighborhood information.
+\newblock {\em Scientific Reports}, 7:12140, 2017.
+
+\bibitem{jolliffe2002pca}
+I.~T. Jolliffe.
+\newblock {\em Principal Component Analysis}.
+\newblock Springer, 2 edition, 2002.
+
+\bibitem{jolliffe2016pca}
+Ian~T. Jolliffe and Jorge Cadima.
+\newblock Principal component analysis: a review and recent developments.
+\newblock {\em Philosophical Transactions of the Royal Society A}, 374(2065):20150202, 2016.
+
+\bibitem{pei2026antigenlm}
+Y.~Pei, X.~Chi, and Y.~Kang.
+\newblock Antigenlm: Structure-aware dna language modeling for influenza.
+\newblock In {\em International Conference on Learning Representations}, 2026.
+\newblock Metadata should be verified against the official publication record.
+
+\bibitem{spearman1904}
+C.~Spearman.
+\newblock The proof and measurement of association between two things.
+\newblock {\em The American Journal of Psychology}, 15(1):72--101, 1904.
+
+\end{thebibliography}

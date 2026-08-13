@@ -1,0 +1,53 @@
+
+[Full Spearman] Pair-sampled latent vs temporal/molecular distances
+  seed=42 H1N1 hamming_ha: rho=0.8272 valid=199,915 omitted=85
+  seed=42 H1N1 hamming_ha_na: rho=0.8530 valid=199,900 omitted=100
+  seed=42 H3N2 hamming_ha: rho=0.6088 valid=199,991 omitted=9
+  seed=42 H3N2 hamming_ha_na: rho=0.6689 valid=199,553 omitted=447
+  seed=7 H1N1 hamming_ha: rho=0.8292 valid=199,921 omitted=79
+  seed=7 H1N1 hamming_ha_na: rho=0.8540 valid=199,908 omitted=92
+  seed=7 H3N2 hamming_ha: rho=0.6075 valid=199,989 omitted=11
+  seed=7 H3N2 hamming_ha_na: rho=0.6659 valid=199,528 omitted=472
+  seed=123 H1N1 hamming_ha: rho=0.8276 valid=199,907 omitted=93
+  seed=123 H1N1 hamming_ha_na: rho=0.8544 valid=199,901 omitted=99
+  seed=123 H3N2 hamming_ha: rho=0.6082 valid=199,986 omitted=14
+  seed=123 H3N2 hamming_ha_na: rho=0.6686 valid=199,532 omitted=468
+
+[Full PCA] Exact covariance spectrum
+
+[TwoNN] Sensitivity on HA+NA deduplicated embeddings
+  n=5,000 seed=42 trim=0.01: d=4.000 R2=0.9809 ok
+  n=5,000 seed=42 trim=0.05: d=5.674 R2=0.9736 ok
+  n=5,000 seed=7 trim=0.01: d=3.846 R2=0.9818 ok
+  n=5,000 seed=7 trim=0.05: d=5.365 R2=0.9708 ok
+  n=5,000 seed=123 trim=0.01: d=3.832 R2=0.9800 ok
+  n=5,000 seed=123 trim=0.05: d=5.451 R2=0.9706 ok
+  n=10,000 seed=42 trim=0.01: d=3.911 R2=0.9775 ok
+  n=10,000 seed=42 trim=0.05: d=5.614 R2=0.9744 ok
+  n=10,000 seed=7 trim=0.01: d=3.822 R2=0.9771 ok
+  n=10,000 seed=7 trim=0.05: d=5.383 R2=0.9700 ok
+  n=10,000 seed=123 trim=0.01: d=3.908 R2=0.9808 ok
+  n=10,000 seed=123 trim=0.05: d=5.486 R2=0.9724 ok
+  n=20,000 seed=42 trim=0.01: d=3.886 R2=0.9787 ok
+  n=20,000 seed=42 trim=0.05: d=5.465 R2=0.9710 ok
+  n=20,000 seed=7 trim=0.01: d=3.794 R2=0.9765 ok
+  n=20,000 seed=7 trim=0.05: d=5.395 R2=0.9712 ok
+  n=20,000 seed=123 trim=0.01: d=3.882 R2=0.9778 ok
+  n=20,000 seed=123 trim=0.05: d=5.487 R2=0.9712 ok
+  n=50,000 seed=42 trim=0.01: d=3.963 R2=0.9802 ok
+  n=50,000 seed=42 trim=0.05: d=5.454 R2=0.9705 ok
+  n=50,000 seed=7 trim=0.01: d=3.798 R2=0.9796 ok
+  n=50,000 seed=7 trim=0.05: d=5.286 R2=0.9703 ok
+  n=50,000 seed=123 trim=0.01: d=3.951 R2=0.9798 ok
+  n=50,000 seed=123 trim=0.05: d=5.446 R2=0.9703 ok
+
+[Temporal locality] Nearest-neighbor time deltas after HA+NA deduplication
+  H1N1 k=5: median neighbors=2.00 random=43.00
+  H1N1 k=10: median neighbors=2.00 random=42.00
+  H1N1 k=20: median neighbors=2.00 random=42.00
+  H3N2 k=5: median neighbors=2.00 random=35.00
+  H3N2 k=10: median neighbors=2.00 random=35.00
+  H3N2 k=20: median neighbors=2.00 random=35.00
+
+Metrics JSON: results/latent_geometry_full_metrics.json
+Summary: results/latent_geometry_full_summary.md
